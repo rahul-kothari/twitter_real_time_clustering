@@ -1,0 +1,21 @@
+===================SCRAPPING TWITTER===============
+USE on_data?
+Get statuses, replies, mentions, retweets, post everything with "#brexit", "brexit"
+Run for 3 days (1 GB)?
+Store every text (only text) in .txt ya .csv
+http://docs.tweepy.org/en/v3.8.0/cursor_tutorial.html
+
+===================TF - IDF ======================
+From the document only get keywords per line.
+
+====================UNSUPERVISED LEARNING==========
+use "elbow method" to find optimal "k"
+do k-means
+
+===================REFER
+K-Means clustering (partitional clustering algorithm)
+Ref Python-ML-Book (in Year2/AI)
+
+
+STEP 1:- ensure u get real time stream event for #brexit or #trump
+STEP 2:- extract keywords from each tweet and store it as array
