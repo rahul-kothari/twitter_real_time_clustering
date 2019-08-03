@@ -128,4 +128,3 @@ dmypy.json
 # my stuff
 src/config.py
 /data
-/docs

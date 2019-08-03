@@ -1,0 +1,4 @@
+api = API(auth)
+tweets = api.user_timeline(screen_name="karanjohar")
+for tweet in tweets:
+    print(tweet.text)

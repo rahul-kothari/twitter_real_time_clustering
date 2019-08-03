@@ -1,0 +1,5 @@
+Cursor(api.search, q=...)
+
+q = "brexit OR brexitShambles OR ...  -filter: retweets from:RahulKo96245846"
+from - a particular user ID
+https://developer.twitter.com/en/docs/tweets/search/guides/standard-operators
