@@ -2,26 +2,34 @@
 Get statuses, replies,quote tweets with q="brexit". Ignore retweets
 [entities - has all urls, hashtags, mentions etc. If truncated==true -> use full text. Warna text?]
 
-COVERED:
-if q="brexit" -> can get Brexit, #Brexit, #brexit, brexit
+NEXT STEP - check which hashtags among thos ein config actually needed,
+            doing tf-idf in python
 
 
-
-QUESTIONS:
-2. Need replies, quote tweets also
+QUESTIONS: (don't delete - need for documentation)
+1. will "brexit" get #brexit, Brexit, #Brexit too?  YES
+2. Need replies, quote tweets also                  XXX
+3. best encoding for removing "b", unicode chars    DONE
+4. does "nodeal" get #NoDeal too?                   YES
 5. Need #brexitShambles all tweets with similar # too...
 6. need those tweets with "brexity" - i.e. suffix/prefix to "brexit"
-
+7. How to get around 10000 tweets at once? - using "wait_on_rate_limit" -> because if you do try and exception on cursor to catch TweepError - u might get blacklisted...
+8. does my way of avoid getting same tweets again?
 
 Store every text (only text) in .txt (new line pe)
+For efficiency - first write in a list and do write() only once! doing so many system calls is very slow!
 
 http://docs.tweepy.org/en/latest/cursor_tutorial.html
 http://docs.tweepy.org/en/latest/api.html#API.search
 https://developer.twitter.com/en/docs/tweets/search/guides/standard-operators
 https://developer.twitter.com/en/docs/tweets/data-dictionary/overview/intro-to-tweet-json
 
+ALL HASHTAG SOURCES:
+https://ukandeu.ac.uk/how-remain-and-leave-camps-use-hashtags/
+https://ritetag.com/best-hashtags-for/brexit
 ===================2. TF - IDF ======================
 From the document only get keywords per line.
+GOOGLE - tf-idf in python
 
 ====================3. UNSUPERVISED LEARNING==========
 use "elbow method" to find optimal "k"
