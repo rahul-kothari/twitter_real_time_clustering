@@ -1,5 +1,6 @@
 from config import *
-from tweepy import API, OAuthHandler, Cursor, TweepError
+from tweepy import API, OAuthHandler, Cursor
+import re
 
 # OAuth process
 auth = OAuthHandler(CONSUMER_KEY, CONSUMER_API_SECRET)
@@ -20,7 +21,31 @@ NUM_OF_TWEETS_NEEDED = 10
 for tweet in Cursor(api.search, q=search_criteria, lang=lang, tweet_mode='extended').items(NUM_OF_TWEETS_NEEDED):
     count += 1
     print(count, tweet.full_text)
-    data.append(tweet.full_text)
+    # CLEAN THE DATA ->
+    """
+    1. Use regex to remove all user mentions, URLs.
+    "?:@|https?://|www)\S+" -> 
+    words starting with @ or prefixed with ":" OR https OR https:// OR www 
+    followed with 1 or more whitespaces (\S+)
+    Replace them with "" -> use re.sub()
+    
+   2. Remove all punctuations i.e. only keep words with [a-1],[A-W],[0-9]
+    Remove any other characters within the word.
+    ==> re.findall(\w+)
+    findall gives list
+    
+    3. Now filter all stopwords from this list.
+    """
+    removed_mentions_urls = re.sub(r"(?:@|https?://|www)\S+", "", tweet.full_text)
+    removed_punctuations = re.findall(r'\w+', removed_mentions_urls)
+    # [word for word in removed_punctuations if word not in STOPWORDS]
+    removed_stopwords = list()
+    for word in removed_punctuations:
+        if word.lower() not in STOPWORDS:
+            removed_stopwords.append(word)
+    print(removed_stopwords)
+
+    data.append(str(removed_stopwords))
 
 delimiter = "\n\n-----------\n\n"
 open('../data/tweets.txt', 'a', encoding="utf8")\

@@ -1,5 +1,0 @@
-# READING CSV FILE
-with open('../data/tweets.csv', encoding='utf8') as csvfile:
-     readCSV = csv.reader(csvfile)
-     for row in readCSV:
-         print(row)

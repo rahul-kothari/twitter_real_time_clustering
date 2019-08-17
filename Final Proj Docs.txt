@@ -5,6 +5,7 @@ Get statuses, replies,quote tweets with q="brexit". Ignore retweets
 NEXT STEP - check which hashtags among thos ein config actually needed,
             doing tf-idf in python
 
+Filter out retweets - they are the same content repeated twice
 
 QUESTIONS: (don't delete - need for documentation)
 1. will "brexit" get #brexit, Brexit, #Brexit too?  YES
@@ -23,13 +24,26 @@ http://docs.tweepy.org/en/latest/cursor_tutorial.html
 http://docs.tweepy.org/en/latest/api.html#API.search
 https://developer.twitter.com/en/docs/tweets/search/guides/standard-operators
 https://developer.twitter.com/en/docs/tweets/data-dictionary/overview/intro-to-tweet-json
-
 ALL HASHTAG SOURCES:
 https://ukandeu.ac.uk/how-remain-and-leave-camps-use-hashtags/
 https://ritetag.com/best-hashtags-for/brexit
-===================2. TF - IDF ======================
-From the document only get keywords per line.
-GOOGLE - tf-idf in python
+
+===================2. Filter Words======================
+Remove user mentions, uris - "(?:@|https?://|www)\S+"
+Remove punctuations, spl chaacters, emojis -
+Not using nltk.tokenize.word_tokenize
+Instead regex - '\w+' only keep chars that are [0-9],[a-z],[A-Z]
+
+Now remove stop words
+Stop words are words that are grammatically essential to structure,
+but contribute very little to the context of a sentence.
+
+Decided to use stop words instead OF tf-idf since each tweet is barely a sentence
+Got stop words from nltk.corpus.stopwords library.
+
+Argument for writing to file MUST be string. So convert final filtered result to a string by adding quotes around [].
+
+Once the data was cleaned up it was now ready for machine learning.
 
 ====================3. UNSUPERVISED LEARNING==========
 use "elbow method" to find optimal "k"
