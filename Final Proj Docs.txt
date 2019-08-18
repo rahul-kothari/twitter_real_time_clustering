@@ -29,25 +29,28 @@ https://ukandeu.ac.uk/how-remain-and-leave-camps-use-hashtags/
 https://ritetag.com/best-hashtags-for/brexit
 
 ===================2. Filter Words======================
-Remove user mentions, uris - "(?:@|https?://|www)\S+"
+Remove user mentions, uris,RT - "(?:@|https?://|www|RT)\S+"
 Remove punctuations, spl chaacters, emojis -
 Not using nltk.tokenize.word_tokenize
 Instead regex - '\w+' only keep chars that are [0-9],[a-z],[A-Z]
 
-Now remove stop words
+====================3. UNSUPERVISED LEARNING==========
+Need to further clean data -
+remove stop words
 Stop words are words that are grammatically essential to structure,
 but contribute very little to the context of a sentence.
+Got stop words from the nltk pacakge - found it to be most comprehensive. SKlearn's list has several known issues
+(https://scikit-learn.org/stable/modules/feature_extraction.html#stop-words)
 
-Decided to use stop words instead OF tf-idf since each tweet is barely a sentence
-Got stop words from nltk.corpus.stopwords library.
-
-Argument for writing to file MUST be string. So convert final filtered result to a string by adding quotes around [].
+Now use TF-IDF across all the tweets to extract import words
+(COPY DESCRIPTION IN towardsdaatscience website)
 
 Once the data was cleaned up it was now ready for machine learning.
 
-====================3. UNSUPERVISED LEARNING==========
 use "elbow method" to find optimal "k"
 do k-means
+
+https://towardsdatascience.com/applying-machine-learning-to-classify-an-unsupervised-text-document-e7bb6265f52
 
 ===================REFER
 K-Means clustering (partitional clustering algorithm)

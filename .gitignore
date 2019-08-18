@@ -128,3 +128,4 @@ dmypy.json
 # my stuff
 src/config.py
 /data
+src/test.py
