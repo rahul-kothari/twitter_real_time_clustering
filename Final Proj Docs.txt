@@ -1,3 +1,6 @@
+==================0. Create virtual environment==============
+
+
 ===================1. SCRAPPING TWITTER (training)===============
 Get statuses, replies,quote tweets with q="brexit". Ignore retweets
 [entities - has all urls, hashtags, mentions etc. If truncated==true -> use full text. Warna text?]

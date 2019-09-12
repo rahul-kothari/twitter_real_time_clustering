@@ -18,6 +18,13 @@ data = list()
 NUM_OF_TWEETS_NEEDED = 100
 filename = '../data/tweets.txt'
 
+
+def data_preprocessing(full_text):
+    removed_mentions_urls = re.sub(r"(?:@|https?://|www)\S+|^(RT)\s+", "", full_text)
+    removed_punctuations = re.findall(r'\w+', removed_mentions_urls)
+    return removed_punctuations
+
+
 # searching for tweets.
 for tweet in Cursor(api.search, q=search_criteria, lang=lang, tweet_mode='extended').items(NUM_OF_TWEETS_NEEDED):
     count += 1
@@ -38,10 +45,9 @@ for tweet in Cursor(api.search, q=search_criteria, lang=lang, tweet_mode='extend
     
     3. remove stop words later using sklearn TF-IDF Vector
     """
-    removed_mentions_urls = re.sub(r"(?:@|https?://|www)\S+|^(RT)\s+", "", tweet.full_text)
-    removed_punctuations = re.findall(r'\w+', removed_mentions_urls)
+    processed_tweet = data_preprocessing(tweet.full_text)
 
-    data.append(" ".join(removed_punctuations))
+    data.append(" ".join(processed_tweet))
 
 delimiter = "\n"
 open(filename, 'a', encoding="utf8")\
