@@ -1,5 +1,6 @@
 ==================0. Create virtual environment==============
-
+.\venv\Scripts\activate
+.\venv\Scripts\deactivate
 
 ===================1. SCRAPPING TWITTER (training)===============
 Get statuses, replies,quote tweets with q="brexit". Ignore retweets

@@ -32,8 +32,9 @@ def get_tweets(num_of_tweets, search_criteria=TOPIC, lang="en"):
     return tweets
 
 
-# get tweets and put it in a file
-data = get_tweets(100)
-filename = FILE_PATH
-delimiter = "\n"
-open(filename, 'a', encoding="utf8").write(delimiter.join(data))
+if __name__ == "main":
+    # get tweets and put it in a file
+    data = get_tweets(100)
+    filename = FILE_PATH
+    delimiter = "\n"
+    open(filename, 'a', encoding="utf8").write(delimiter.join(data))
