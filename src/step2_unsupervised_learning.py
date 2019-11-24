@@ -1,4 +1,4 @@
-from config import FILE_PATH, AI_MODEL_FILENAME
+from config import FILE_PATH, STATE_VARIABLE_FILENAME 
 from data_cleanup import remove_stopwords_and_tfidf
 from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
@@ -57,12 +57,12 @@ if __name__ == '__main__' :
     X,vectorizer = get_cleaned_data()
     elbow_method(X)
 
-    # 4. Do KMeans
-    # n_cluster = 4 # obtained after doing KMeans
+    # n_cluster = 4 # obtained after doing elbow method
     # model = doKMeans(n_cluster,X)
 
-    #Save model:
-    # pickle.dump(model, open(AI_MODEL_FILENAME, 'wb'))  
+    #Save model and vectorizer:
+    # with open(STATE_VARIABLE_FILENAME, 'wb') as f:
+    #     pickle.dump([vectorizer, model], f)
 
     # 5. Relevant output
     # TODO
