@@ -55,21 +55,21 @@ def doKMeans(num_cluster,X):
 
 if __name__ == '__main__' :
     X,vectorizer = get_cleaned_data()
-    elbow_method(X)
+    #elbow_method(X)
 
-    # n_cluster = 4 # obtained after doing elbow method
-    # model = doKMeans(n_cluster,X)
+    n_cluster = 6 # obtained after doing elbow method
+    model = doKMeans(n_cluster,X)
 
     #Save model and vectorizer:
-    # with open(STATE_VARIABLE_FILENAME, 'wb') as f:
-    #     pickle.dump([vectorizer, model], f)
+    with open(STATE_VARIABLE_FILENAME, 'wb') as f:
+        pickle.dump([vectorizer, model], f)
 
     # 5. Relevant output
     # TODO
-    # order_centroids = model.cluster_centers_.argsort()[:, ::-1]
-    # terms = vectorizer.get_feature_names()
-    # # prints keywords in each cluster
-    # for i in range(n_cluster):
-    #     print("\nCluster %d:" % i)
-    #     for ind in order_centroids[i, :10]:
-    #         print(' %s' % terms[ind], end='')
+    order_centroids = model.cluster_centers_.argsort()[:, ::-1]
+    terms = vectorizer.get_feature_names()
+    # prints keywords in each cluster
+    for i in range(n_cluster):
+        print("\nCluster %d:" % i)
+        for ind in order_centroids[i, :10]:
+            print(' %s' % terms[ind], end='')
