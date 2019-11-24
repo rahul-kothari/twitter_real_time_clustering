@@ -13,7 +13,7 @@ def create_twitter_object():
     return api
 
 
-def get_tweets(num_of_tweets, search_criteria=TOPIC, lang="en"):
+def get_tweets(num_of_tweets=NUM_OF_TWEETS_NEEDED, search_criteria=TOPIC, lang="en", filename=FILE_PATH):
     """
     Get tweets using tweepy api.
     :param num_of_tweets: (int) to be fetched from api
@@ -23,18 +23,26 @@ def get_tweets(num_of_tweets, search_criteria=TOPIC, lang="en"):
     """
     api = create_twitter_object()
     count = 0
-    tweets = list()
+    all_tweets = list()
+    tweets=[]
     for tweet in Cursor(api.search, q=search_criteria, lang=lang, tweet_mode='extended').items(num_of_tweets):
         count += 1
         print(count, tweet.full_text)
         processed_tweet = remove_urls_users_punctuations(tweet.full_text)
         tweets.append(processed_tweet)
-    return tweets
+        if(count%250==0):
+           # write to file every 250 tweets. 
+           open(filename, 'a', encoding="utf8").write("\n".join(tweets))
+           all_tweets.extend(tweets)
+           tweets = []
+    # if there is left some tweets left:
+    open(filename, 'a', encoding="utf8").write("\n".join(tweets))
+    all_tweets.extend(tweets)
+    return all_tweets
+
+
 
 
 if __name__ == '__main__' :
     # get tweets and put it in a file
-    data = get_tweets(NUM_OF_TWEETS_NEEDED)
-    filename = FILE_PATH
-    delimiter = "\n"
-    open(filename, 'a', encoding="utf8").write(delimiter.join(data))
+    data = get_tweets()
