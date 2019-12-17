@@ -1,3 +1,13 @@
+NOTES = CONFIG.PY ka topic was not giving anything interesting. SO I started with seearch params like:
+"brexit and economy
+brexit ADN politics
+brexit AND tourism
+brexit and tories
+brexit and johnson
+...
+
+
+
 ==================0. Create virtual environment==============
 .\venv\Scripts\activate
 .\venv\Scripts\deactivate
@@ -59,16 +69,6 @@ https://towardsdatascience.com/applying-machine-learning-to-classify-an-unsuperv
 ===================REFER
 K-Means clustering (partitional clustering algorithm)
 Ref Python-ML-Book (in Year2/AI)
-
-=======================4. Labelling data===========
-"Classification after clustering"
-Store the classification such that it can be used for supervised learning
-https://nbviewer.jupyter.org/github/mudassirkhan19/cluster-classification/blob/master/Kmeans_classification.ipynb?source=post_page---------------------------
-
-======================5. ML Supervised Learning===========
-Learn from it (SVM ya kuch)...
-STANDARDIZE INPUT
-
 
 =====================6. Real time classification==========
 use code in event_catcher.py to catch tweets in real time and classify model on the fly! (ASYNC MODE!)
