@@ -51,28 +51,36 @@ def doKMeans(num_cluster,X):
     model.fit(X)
     return model
 
-# TODO : EXPERIMENT WITH OTHER UNSUPERVISED LEARING MODELS:
-
-
-if __name__ == '__main__' :
-    X,vectorizer = get_cleaned_data()
-    print("done cleaning data")
-    # elbow_method(X)
-    # user_input = input("Number of clusters needed: ")
-    user_input = 9
-    n_cluster = int(user_input) # obtained after doing elbow method
-    # model = doKMeans(n_cluster,X)
-
-    # #Save model and vectorizer:
-    # with open(STATE_VARIABLE_FILENAME, 'wb') as f:
-    #     pickle.dump([vectorizer, model], f)
+def printClusterCentroidFeatureNames(n_cluster=9):
     vectorizer, model = pickle.load(open(STATE_VARIABLE_FILENAME, 'rb'))
-    # 5. Relevant output
-    # TODO
     order_centroids = model.cluster_centers_.argsort()[:, ::-1]
     terms = vectorizer.get_feature_names()
     # prints keywords in each cluster
     for i in range(n_cluster):
-        print("\nCluster %d:" % i)
+        print("\nCluster %d:" % (i+1))
         for ind in order_centroids[i, :20]:
             print(' %s' % terms[ind], end='')
+
+# TODO : EXPERIMENT WITH OTHER UNSUPERVISED LEARING MODELS:
+
+
+if __name__ == '__main__' :
+
+    print("1. Get trained KMeans cluster info")
+    print("2. Train new model")
+    choice = int(input("Enter your choice [1/2]: "))
+    if(choice==1):    
+        printClusterCentroidFeatureNames()
+    else:
+        X,vectorizer = get_cleaned_data()
+        print("done cleaning data")
+        elbow_method(X)
+        user_input = input("Number of clusters needed: ")
+        n_cluster = int(user_input) # obtained after doing elbow method
+        model = doKMeans(n_cluster,X)
+
+        #Save model and vectorizer:
+        with open(STATE_VARIABLE_FILENAME, 'wb') as f:
+            pickle.dump([vectorizer, model], f)
+
+        print("model saved to ./",STATE_VARIABLE_FILENAME)

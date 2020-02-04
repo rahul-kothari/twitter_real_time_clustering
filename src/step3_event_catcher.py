@@ -36,7 +36,7 @@ class TwitterListener(StreamListener):
         X = self.vectorizer.transform([cleaned_text]) 
         predicted_cluster = self.model.predict(X)  
         # TODO: build some kind of graph ???
-        print(predicted_cluster)
+        print(predicted_cluster+1)
 
     def on_error(self, status_code):
         print(status_code)
