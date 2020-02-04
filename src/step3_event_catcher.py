@@ -17,8 +17,8 @@ auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 class TwitterListener(StreamListener):
 
     def __init__(self):
-        vectorizer, model = pickle.load(open(STATE_VARIABLE_FILENAME, 'rb'))
-        sleep_time = 60 #in seconds 
+        self.vectorizer, self.model = pickle.load(open(STATE_VARIABLE_FILENAME, 'rb'))
+        self.sleep_time = 60 #in seconds 
     
     def on_connect(self): 
         print('Stream starting...') 
@@ -26,21 +26,24 @@ class TwitterListener(StreamListener):
     def on_data(self, data): 
         # print(data) 
         tweet = json.loads(data)
+
         if(tweet["truncated"]):
             text = tweet["extended_tweet"]["full_text"]
         else:
             text = tweet["text"]
-        # X = vectorizer.transform([remove_urls_users_punctuations(text)]) 
-        # predicted_cluster = model.predict(X)  
-        # # TODO: build some kind of graph ???
-        # print(predicted_cluster)
+        cleaned_text = remove_urls_users_punctuations(text)
+        print(cleaned_text)
+        X = self.vectorizer.transform([cleaned_text]) 
+        predicted_cluster = self.model.predict(X)  
+        # TODO: build some kind of graph ???
+        print(predicted_cluster)
 
     def on_error(self, status_code):
         print(status_code)
         # switch(status_code):
         if(status_code==420):   # exponential backoff
-            time.sleep(sleep_time)
-            sleep_time= self.sleep_time * 2                  
+            time.sleep(self.sleep_time)
+            self.sleep_time= self.sleep_time * 2                  
         elif (status_code == 404):
             print("no resource here/ URL doesn't exist");
             return False; 
@@ -57,4 +60,4 @@ class TwitterListener(StreamListener):
 
 if __name__ == '__main__' :
     twitterStream = Stream(auth, TwitterListener())
-    twitterStream.filter(track=["trump", "donald trump"])
+    twitterStream.filter(track=["brexit"])

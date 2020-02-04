@@ -30,6 +30,7 @@ def elbow_method(X):
     Sum_of_squared_distances = []
     K=range(1,15)
     for k in K:
+        print("elbow method - doing kmeans for K=",k)
         model = doKMeans(k,X)
         Sum_of_squared_distances.append(model.inertia_)
 
@@ -55,15 +56,17 @@ def doKMeans(num_cluster,X):
 
 if __name__ == '__main__' :
     X,vectorizer = get_cleaned_data()
-    #elbow_method(X)
+    print("done cleaning data")
+    # elbow_method(X)
+    # user_input = input("Number of clusters needed: ")
+    user_input = 9
+    n_cluster = int(user_input) # obtained after doing elbow method
+    # model = doKMeans(n_cluster,X)
 
-    n_cluster = 6 # obtained after doing elbow method
-    model = doKMeans(n_cluster,X)
-
-    #Save model and vectorizer:
-    with open(STATE_VARIABLE_FILENAME, 'wb') as f:
-        pickle.dump([vectorizer, model], f)
-
+    # #Save model and vectorizer:
+    # with open(STATE_VARIABLE_FILENAME, 'wb') as f:
+    #     pickle.dump([vectorizer, model], f)
+    vectorizer, model = pickle.load(open(STATE_VARIABLE_FILENAME, 'rb'))
     # 5. Relevant output
     # TODO
     order_centroids = model.cluster_centers_.argsort()[:, ::-1]
@@ -71,5 +74,5 @@ if __name__ == '__main__' :
     # prints keywords in each cluster
     for i in range(n_cluster):
         print("\nCluster %d:" % i)
-        for ind in order_centroids[i, :10]:
+        for ind in order_centroids[i, :20]:
             print(' %s' % terms[ind], end='')

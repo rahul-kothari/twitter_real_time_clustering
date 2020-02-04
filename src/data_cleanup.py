@@ -15,9 +15,10 @@ def remove_urls_users_punctuations(full_text):
     """
     """    
     1. Use regex to remove all user mentions, URLs, RT
-    "(?:@|https?://|www)\S+|^(RT)\s+" -> 
+    "(?:@|https?://|www)\S+|\w*\d\w*|^(RT)\s+" -> 
     words starting with @ or prefixed with ":" OR https OR https:// OR www 
     NOT followed by any whitespaces (\S+)
+    OR \w*\d\w* -> remove any words with numbers.
     OR ^RT\s+ -> starts with RT followed by whitespaces.
     Replace them with "" -> use re.sub()
 
@@ -26,7 +27,7 @@ def remove_urls_users_punctuations(full_text):
     ==> re.findall(\w+)
     findall gives list. So join it.
     """
-    removed_mentions_urls = re.sub(r"(?:@|https?://|www)\S+|^(RT)\s+", "", full_text)
+    removed_mentions_urls = re.sub(r"(?:@|https?://|www)\S+|\w*\d\w*|^(RT)\s+", "", full_text)
     removed_punctuations = re.findall(r'\w+', removed_mentions_urls)
     return " ".join(removed_punctuations)
 
@@ -38,6 +39,9 @@ def remove_stopwords_and_tfidf(proecessed_tweets):
     :return: _data - removing stop words, and doing tfidf
             _vectorizer - TFIDF Vectorizer Object
     """
+    # remove words with numbers.
+    proecessed_tweets = [ re.sub(r'\w*\d\w*', '', tweet).strip() for tweet in proecessed_tweets]
+    
     _vectorizer = TfidfVectorizer(stop_words=STOPWORDS)  # pass my own list of stopwords
     _data = _vectorizer.fit_transform(proecessed_tweets)
     return _data, _vectorizer

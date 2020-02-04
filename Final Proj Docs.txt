@@ -6,7 +6,23 @@ brexit and tories
 brexit and johnson
 ...
 no-deal brexit
+brexit and stock market
+brexit banking
+brexit jobs
+brexit tech
+brexit sterling
 
+CHANGES:
+1. Collected data as above because the general form gave very generic data, and often very slangy/ useless tweets like "brexit." "gone" that are created because we remove all pics, websites, user mentions.
+2. Removed numbers in tweets as they messed up clustering
+3. removed emojis and other non english characters.
+
+CHANGES MADE AFTER KMEANS:
+4. Added stop wrods like "via", "amp" and other useless words that end up as the top 20 keywords defining my clusters
+5. Realization ki words like "boris johnson" should be treated as one instead of 2 separate. Same for phrases.
+6. Words like "BBC NEWS" etc. should be ideally ignored.
+
+interestingly, after doing change 4 - elbow method didn't give any good data. SO left it with initial kmeans.
 
 ==================0. Create virtual environment==============
 .\venv\Scripts\activate
@@ -47,7 +63,7 @@ Remove user mentions, uris,RT - "(?:@|https?://|www|RT)\S+"
 Remove punctuations, spl chaacters, emojis -
 Not using nltk.tokenize.word_tokenize
 Instead regex - '\w+' only keep chars that are [0-9],[a-z],[A-Z]
-
+REMOVE NUMBERS TOO (\w*\d\w*) as it effects the ai model.
 ====================3. UNSUPERVISED LEARNING==========
 Need to further clean data -
 remove stop words
