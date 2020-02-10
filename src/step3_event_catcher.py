@@ -24,18 +24,16 @@ class TwitterListener(StreamListener):
         print('Stream starting...') 
     
     def on_data(self, data): 
-        # print(data) 
         tweet = json.loads(data)
-
         if(tweet["truncated"]):
             text = tweet["extended_tweet"]["full_text"]
         else:
             text = tweet["text"]
+            
         cleaned_text = remove_urls_users_punctuations(text)
         print(cleaned_text)
         X = self.vectorizer.transform([cleaned_text]) 
         predicted_cluster = self.model.predict(X)  
-        # TODO: build some kind of graph ???
         print(predicted_cluster+1)
 
     def on_error(self, status_code):
@@ -60,4 +58,4 @@ class TwitterListener(StreamListener):
 
 if __name__ == '__main__' :
     twitterStream = Stream(auth, TwitterListener())
-    twitterStream.filter(track=["brexit"])
+    twitterStream.filter(languages=["en"], track=["brexit"])

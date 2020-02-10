@@ -1,4 +1,4 @@
-from config import FILE_PATH, STATE_VARIABLE_FILENAME 
+from config import FILE_PATH 
 from data_cleanup import remove_stopwords_and_tfidf
 from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
@@ -61,8 +61,6 @@ def printClusterCentroidFeatureNames(n_cluster=9):
         for ind in order_centroids[i, :20]:
             print(' %s' % terms[ind], end='')
 
-# TODO : EXPERIMENT WITH OTHER UNSUPERVISED LEARING MODELS:
-
 
 if __name__ == '__main__' :
 
@@ -78,9 +76,9 @@ if __name__ == '__main__' :
         user_input = input("Number of clusters needed: ")
         n_cluster = int(user_input) # obtained after doing elbow method
         model = doKMeans(n_cluster,X)
-
+        file_name = raw_input("Enter filename to store data in [WITHOUT .pkl extension]: ")+".pkl"
         #Save model and vectorizer:
-        with open(STATE_VARIABLE_FILENAME, 'wb') as f:
+        with open(file_name, 'wb') as f:
             pickle.dump([vectorizer, model], f)
 
-        print("model saved to ./",STATE_VARIABLE_FILENAME)
+        print("model saved to ./",file_name)
