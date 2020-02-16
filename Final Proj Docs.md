@@ -24,6 +24,12 @@
 
 ## THESIS RELATED NOTES/CHANGES/ADDITIONS/THINGS TO TALK ABOUT:
 
+**To write in Thesis**:
+* 3 types of anamolies (point, collective, contextual). Yours is collective. Call them topics coz yours is that
+* talk about your pipeline, snippets of scripts, graphically represent clusters,..
+* UML dg like seqeunce, activity dg shows collection of tweets...
+* testing related bs
+
 **NOTES = CONFIG.PY ka topic was not giving anything interesting.** SO I started with seearch params like:
 "brexit and economy
 brexit ADN politics

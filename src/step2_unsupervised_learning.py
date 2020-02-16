@@ -1,10 +1,10 @@
-from config import FILE_PATH 
+from config import * 
 from data_cleanup import remove_stopwords_and_tfidf
 from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 import pickle
 
-def get_cleaned_data():
+def get_cleaned_data(topic):
     """
     get tweets stored on file, remove stopwords and do TFIDF
     :returns: 
@@ -12,11 +12,12 @@ def get_cleaned_data():
             Size = numOfSentences,numOfUniqueWords)
         vectorizer : TF-IDF Vectorizer.
     """
-    # 1. Read data from tweets.txt
-    filename = FILE_PATH
-    tweets = [line.rstrip('\n').lower() for line in open(filename)]
-    # doing file.readLines appends '\n' always.
+    if topic==Topic.BREXIT:
+        filename = FILE_PATH
+    elif topic==Topic.CORONA:
+        filename = FILE_PATH_CORONA
 
+    tweets = [line.rstrip('\n').lower() for line in open(filename)]
     # 2. remove stopwords, do tfidf
     X, vectorizer = remove_stopwords_and_tfidf(tweets)
     return X, vectorizer
@@ -51,8 +52,15 @@ def doKMeans(num_cluster,X):
     model.fit(X)
     return model
 
-def printClusterCentroidFeatureNames(n_cluster=9):
-    vectorizer, model = pickle.load(open(STATE_VARIABLE_FILENAME, 'rb'))
+def printClusterCentroidFeatureNames(topic):
+
+    if topic==Topic.BREXIT:
+        stored_model = STORED_MODEL
+    elif topic==Topic.CORONA:
+        stored_model = STORED_MODEL_CORONA
+    n_cluster = int(stored_model.split("_")[0])
+
+    vectorizer, model = pickle.load(open(stored_model, 'rb'))
     order_centroids = model.cluster_centers_.argsort()[:, ::-1]
     terms = vectorizer.get_feature_names()
     # prints keywords in each cluster
@@ -64,21 +72,23 @@ def printClusterCentroidFeatureNames(n_cluster=9):
 
 if __name__ == '__main__' :
 
-    print("1. Get trained KMeans cluster info")
-    print("2. Train new model")
-    choice = int(input("Enter your choice [1/2]: "))
-    if(choice==1):    
-        printClusterCentroidFeatureNames()
+    topic=Topic(int(input("Which topic (1 for brexit / 2 for corona)?: ")))
+    #TODO: Convert topic to enum!
+    print("1. Train new model")
+    print("2. Get trained KMeans cluster info")
+    trainOrNot = int(input("Enter your choice [1/2]: "))    
+
+    if(trainOrNot==2):    
+        printClusterCentroidFeatureNames(topic)
     else:
-        X,vectorizer = get_cleaned_data()
+        X,vectorizer = get_cleaned_data(topic)
         print("done cleaning data")
         elbow_method(X)
         user_input = input("Number of clusters needed: ")
         n_cluster = int(user_input) # obtained after doing elbow method
         model = doKMeans(n_cluster,X)
-        file_name = raw_input("Enter filename to store data in [WITHOUT .pkl extension]: ")+".pkl"
+        file_name = input("Enter filename to store data in [WITHOUT .pkl extension]: ")+".pkl"
         #Save model and vectorizer:
         with open(file_name, 'wb') as f:
             pickle.dump([vectorizer, model], f)
-
-        print("model saved to ./",file_name)
+        print("model saved to ./",file_name)       

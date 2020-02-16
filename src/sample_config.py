@@ -1,3 +1,9 @@
+import enum
+
+class Topic(enum.Enum):
+        BREXIT = 1
+        CORONA = 2
+
 # Twitter Consumer API Key
 CONSUMER_KEY = "XXX"
 CONSUMER_API_SECRET = "XXX""

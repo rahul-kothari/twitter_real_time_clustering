@@ -58,4 +58,9 @@ class TwitterListener(StreamListener):
 
 if __name__ == '__main__' :
     twitterStream = Stream(auth, TwitterListener())
-    twitterStream.filter(languages=["en"], track=["brexit"])
+    topic=Topic(int(input("Which topic (1 for brexit / 2 for corona)?: ")))
+    if(topic==Topic.BREXIT)
+        _track=["brexit"]
+    elif(topic==Topic.CORONA)
+        _track=["corona virus", "corona", "coronavirus"]
+    twitterStream.filter(languages=["en"], track=_track)
