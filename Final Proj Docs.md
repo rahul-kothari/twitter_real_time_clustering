@@ -1,5 +1,5 @@
 ## TODO: 
-- Build histogram in step3
+- Annotate bar graph in step3
 1. 
 - Try other unsupervised algorithms:
     * Ward Hierarchichal,
@@ -29,6 +29,8 @@
 * talk about your pipeline, snippets of scripts, graphically represent clusters,..
 * UML dg like seqeunce, activity dg shows collection of tweets...
 * testing related bs
+
+* doing corona -> I would get utf8 decoding errors coz chinese/arabic/hindi characters would pass through. Had to mannually delete them by identifyig where they came.
 
 **NOTES = CONFIG.PY ka topic was not giving anything interesting.** SO I started with seearch params like:
 "brexit and economy

@@ -1,5 +1,6 @@
-from config import *
 from tweepy import API, Cursor, AppAuthHandler
+
+from config import *
 from data_cleanup import remove_urls_users_punctuations
 
 

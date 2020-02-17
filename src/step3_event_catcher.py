@@ -1,13 +1,12 @@
-import csv
 import json
-import pickle
 import time
 
 from tweepy import Stream, OAuthHandler
 from tweepy.streaming import StreamListener
 
-from config import *
+from config import CONSUMER_API_SECRET,CONSUMER_KEY,ACCESS_TOKEN,ACCESS_TOKEN_SECRET 
 from data_cleanup import remove_urls_users_punctuations
+from utils import getStreamingTrackFromTopic, getStoredModelFromTopic, createBarGraph
 
 # OAuth process
 auth = OAuthHandler(CONSUMER_KEY, CONSUMER_API_SECRET)
@@ -16,9 +15,16 @@ auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 # listener that handles streaming data
 class TwitterListener(StreamListener):
 
-    def __init__(self):
-        self.vectorizer, self.model = pickle.load(open(STATE_VARIABLE_FILENAME, 'rb'))
+    def __init__(self, topic):
         self.sleep_time = 60 #in seconds 
+        self.vectorizer, self.model, self.n_cluster = getStoredModelFromTopic(topic)
+        self.tweetsPerCluster = dict()
+        self._initializeDictionary()
+        self.count=0
+
+    def _initializeDictionary(self):
+        for cluster in range(1, self.n_cluster+1):
+            self.tweetsPerCluster[cluster]=0
     
     def on_connect(self): 
         print('Stream starting...') 
@@ -33,8 +39,15 @@ class TwitterListener(StreamListener):
         cleaned_text = remove_urls_users_punctuations(text)
         print(cleaned_text)
         X = self.vectorizer.transform([cleaned_text]) 
-        predicted_cluster = self.model.predict(X)  
-        print(predicted_cluster+1)
+        predicted_cluster = int(self.model.predict(X))+1  
+        print(predicted_cluster)
+        self.tweetsPerCluster[predicted_cluster]+=1
+        self.count+=1
+
+        #EXIT STREAMING TO CREATE BAR GRAPH
+        if self.count==20:
+            createBarGraph(self.n_cluster,self.tweetsPerCluster)
+            return False
 
     def on_error(self, status_code):
         print(status_code)
@@ -57,10 +70,7 @@ class TwitterListener(StreamListener):
             
 
 if __name__ == '__main__' :
-    twitterStream = Stream(auth, TwitterListener())
-    topic=Topic(int(input("Which topic (1 for brexit / 2 for corona)?: ")))
-    if(topic==Topic.BREXIT)
-        _track=["brexit"]
-    elif(topic==Topic.CORONA)
-        _track=["corona virus", "corona", "coronavirus"]
+    topic=int(input("Which topic (1 for brexit / 2 for corona)?: "))
+    _track = getStreamingTrackFromTopic(topic)
+    twitterStream = Stream(auth, TwitterListener(topic))
     twitterStream.filter(languages=["en"], track=_track)

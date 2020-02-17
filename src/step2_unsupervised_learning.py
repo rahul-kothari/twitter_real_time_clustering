@@ -1,8 +1,8 @@
-from config import * 
-from data_cleanup import remove_stopwords_and_tfidf
-from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
-import pickle
+from sklearn.cluster import KMeans
+
+from data_cleanup import remove_stopwords_and_tfidf
+from utils import getStoredModelFromTopic, getDataFilenameFromTopic,writeModelToFile
 
 def get_cleaned_data(topic):
     """
@@ -12,11 +12,7 @@ def get_cleaned_data(topic):
             Size = numOfSentences,numOfUniqueWords)
         vectorizer : TF-IDF Vectorizer.
     """
-    if topic==Topic.BREXIT:
-        filename = FILE_PATH
-    elif topic==Topic.CORONA:
-        filename = FILE_PATH_CORONA
-
+    filename = getDataFilenameFromTopic(topic)
     tweets = [line.rstrip('\n').lower() for line in open(filename)]
     # 2. remove stopwords, do tfidf
     X, vectorizer = remove_stopwords_and_tfidf(tweets)
@@ -54,13 +50,7 @@ def doKMeans(num_cluster,X):
 
 def printClusterCentroidFeatureNames(topic):
 
-    if topic==Topic.BREXIT:
-        stored_model = STORED_MODEL
-    elif topic==Topic.CORONA:
-        stored_model = STORED_MODEL_CORONA
-    n_cluster = int(stored_model.split("_")[0])
-
-    vectorizer, model = pickle.load(open(stored_model, 'rb'))
+    vectorizer, model, n_cluster = getStoredModelFromTopic(topic)
     order_centroids = model.cluster_centers_.argsort()[:, ::-1]
     terms = vectorizer.get_feature_names()
     # prints keywords in each cluster
@@ -72,7 +62,7 @@ def printClusterCentroidFeatureNames(topic):
 
 if __name__ == '__main__' :
 
-    topic=Topic(int(input("Which topic (1 for brexit / 2 for corona)?: ")))
+    topic=int(input("Which topic (1 for brexit / 2 for corona)?: "))
     #TODO: Convert topic to enum!
     print("1. Train new model")
     print("2. Get trained KMeans cluster info")
@@ -89,6 +79,4 @@ if __name__ == '__main__' :
         model = doKMeans(n_cluster,X)
         file_name = input("Enter filename to store data in [WITHOUT .pkl extension]: ")+".pkl"
         #Save model and vectorizer:
-        with open(file_name, 'wb') as f:
-            pickle.dump([vectorizer, model], f)
-        print("model saved to ./",file_name)       
+        writeModelToFile(model,vectorizer,file_name)
