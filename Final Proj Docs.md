@@ -32,6 +32,8 @@
 
 * doing corona -> I would get utf8 decoding errors coz chinese/arabic/hindi characters would pass through. Had to mannually delete them by identifyig where they came.
 
+* people writing with abbreviations and typos also cause problems.
+
 **NOTES = CONFIG.PY ka topic was not giving anything interesting.** SO I started with seearch params like:
 "brexit and economy
 brexit ADN politics
@@ -45,6 +47,10 @@ brexit banking
 brexit jobs
 brexit tech
 brexit sterling
+
+corona virus jobs
+corona virus sports
+corona virus economy
 
 ### CHANGES:
 1. Collected data as above because the general form gave very generic data, and often very slangy/ useless tweets like "brexit." "gone" that are created because we remove all pics, websites, user mentions.
