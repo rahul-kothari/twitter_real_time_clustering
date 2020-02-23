@@ -49,7 +49,10 @@ def doKMeans(num_cluster,X):
     return model
 
 def printClusterCentroidFeatureNames(topic):
-
+    """
+    Prints first 20 feature of each cluster.
+    topic: int
+    """
     vectorizer, model, n_cluster = getStoredModelFromTopic(topic)
     order_centroids = model.cluster_centers_.argsort()[:, ::-1]
     terms = vectorizer.get_feature_names()

@@ -16,8 +16,10 @@ auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 class TwitterListener(StreamListener):
 
     def __init__(self, topic):
+        """topic: int (1-brexit. 2-corona)"""
         self.sleep_time = 60 #in seconds 
         self.vectorizer, self.model, self.n_cluster = getStoredModelFromTopic(topic)
+        self.topic = topic
         self.tweetsPerCluster = dict()
         self._initializeDictionary()
         self.count=0
@@ -45,8 +47,8 @@ class TwitterListener(StreamListener):
         self.count+=1
 
         #EXIT STREAMING TO CREATE BAR GRAPH
-        if self.count==20:
-            createBarGraph(self.n_cluster,self.tweetsPerCluster)
+        if self.count==10:
+            createBarGraph(self.topic, self.n_cluster,self.tweetsPerCluster)
             return False
 
     def on_error(self, status_code):

@@ -1,5 +1,4 @@
 ## TODO: 
-- Annotate bar graph in step3
 1. 
 - Try other unsupervised algorithms:
     * Ward Hierarchichal,
@@ -33,6 +32,8 @@
 * doing corona -> I would get utf8 decoding errors coz chinese/arabic/hindi characters would pass through. Had to mannually delete them by identifyig where they came.
 
 * people writing with abbreviations and typos also cause problems.
+
+* annotated bar graphs with top 5 feature names.
 
 **NOTES = CONFIG.PY ka topic was not giving anything interesting.** SO I started with seearch params like:
 "brexit and economy
