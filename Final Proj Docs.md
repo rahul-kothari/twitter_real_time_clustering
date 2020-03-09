@@ -15,10 +15,6 @@
 
     - Compare other models in these models.
 
-3. Do same for corona_virus.
-
-4. STEP3 - User inputs all filter values
-
 5. Update Gantt chart
 
 ## THESIS RELATED NOTES/CHANGES/ADDITIONS/THINGS TO TALK ABOUT:
@@ -51,7 +47,8 @@ brexit sterling
 
 corona virus jobs
 corona virus sports
-corona virus economy
+corona virus economy/banks/stock market
+corona virus hospitals
 
 ### CHANGES:
 1. Collected data as above because the general form gave very generic data, and often very slangy/ useless tweets like "brexit." "gone" that are created because we remove all pics, websites, user mentions.

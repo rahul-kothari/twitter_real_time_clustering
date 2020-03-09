@@ -57,7 +57,7 @@ def getStreamingTrackFromTopic(topic):
         _track=["corona virus", "corona", "coronavirus"]
     return _track
 
-def writeModelToFile(model, vectorizer, filename):
+def writeModelToFile(model, vectorizer, file_name):
     """
     Write ai model and its vectorizer to filename.
     """    

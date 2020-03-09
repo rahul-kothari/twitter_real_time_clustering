@@ -80,6 +80,15 @@ if __name__ == '__main__' :
         user_input = input("Number of clusters needed: ")
         n_cluster = int(user_input) # obtained after doing elbow method
         model = doKMeans(n_cluster,X)
+
+        # prints keywords in each cluster
+        order_centroids = model.cluster_centers_.argsort()[:, ::-1]
+        terms = vectorizer.get_feature_names()
+        for i in range(n_cluster):
+            print("\nCluster %d:" % (i+1))
+            for ind in order_centroids[i, :20]:
+                print(' %s' % terms[ind], end='')
+
         file_name = input("Enter filename to store data in [WITHOUT .pkl extension]: ")+".pkl"
         #Save model and vectorizer:
         writeModelToFile(model,vectorizer,file_name)
