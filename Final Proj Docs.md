@@ -1,13 +1,15 @@
 ## TODO: 
 1. 
 - Try other unsupervised algorithms:
-    * Ward Hierarchichal,
-    * Agglomerative clustering'
-    * DBSCAN
+    * Ward Hierarchichal(Agglomerative clustering) 
+        - EXPERIMENT WITH WARD, SINGLE, AVERAGE LINKAGE, COMPLETE LINKAGE, cosine distance
+    * DBSCAN - coz unlike kmeans jaha clusters can only be convex, here anything
+        - TODO: DETERMINE MIN_SAMPLES.
+		- OPTICS INSTEAD OF DBSCAN?
     * Spectral clustering
     * https://scikit-learn.org/stable/modules/clustering.html#overview-of-clustering-methods
 
-- Represent graphically
+- Represent KMEANS graphically
 
 2. Unsupervised learning validation techniques
     * ROC curves, 

@@ -15,10 +15,10 @@ auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 # listener that handles streaming data
 class TwitterListener(StreamListener):
 
-    def __init__(self, topic):
+    def __init__(self, topic, filename):
         """topic: int (1-brexit. 2-corona)"""
         self.sleep_time = 60 #in seconds 
-        self.vectorizer, self.model, self.n_cluster = getStoredModelFromTopic(topic)
+        self.vectorizer, self.pca, self.model, self.n_cluster = getStoredModelFromTopic(filename)
         self.topic = topic
         self.tweetsPerCluster = dict()
         self._initializeDictionary()
@@ -41,14 +41,17 @@ class TwitterListener(StreamListener):
         cleaned_text = remove_urls_users_punctuations(text)
         print(cleaned_text)
         X = self.vectorizer.transform([cleaned_text]) 
+        X = X.todense()
+        X = self.pca.transform(X)
+        print(X)
         predicted_cluster = int(self.model.predict(X))+1  
         print(predicted_cluster)
         self.tweetsPerCluster[predicted_cluster]+=1
         self.count+=1
 
         #EXIT STREAMING TO CREATE BAR GRAPH
-        if self.count==10:
-            createBarGraph(self.topic, self.n_cluster,self.tweetsPerCluster)
+        if self.count==30:
+            # createBarGraph(self.topic, self.n_cluster,self.tweetsPerCluster)
             return False
 
     def on_error(self, status_code):
@@ -73,6 +76,7 @@ class TwitterListener(StreamListener):
 
 if __name__ == '__main__' :
     topic=int(input("Which topic (1 for brexit / 2 for corona)?: "))
+    filename = "SOMETHING.pkl"
     _track = getStreamingTrackFromTopic(topic)
-    twitterStream = Stream(auth, TwitterListener(topic))
+    twitterStream = Stream(auth, TwitterListener(topic, filename))
     twitterStream.filter(languages=["en"], track=_track)

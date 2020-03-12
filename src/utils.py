@@ -1,44 +1,93 @@
 import pickle
 import numpy as np
+from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
-from config import *
+from mpl_toolkits.mplot3d import Axes3D
 
-def getDataFilenameFromTopic(topic):
+from config import *
+from data_cleanup import remove_stopwords_and_tfidf
+
+def getCleanedData(topic):
     """
-    File where all tweets related to this topic is stored.
+    Gets all tweets from corresponding file. 
+    Removes stopwords
+    Does TFIDF.
     Paramters:
         topic:  int (1-brexit. 2-corona)
     Returns:
-        filename:   str
+        X, vectorizer:   
     """
     topic=Topic(topic)
     if topic==Topic.BREXIT:
         filename = FILE_PATH
     elif topic==Topic.CORONA:
         filename = FILE_PATH_CORONA
-    return filename
 
-def getStoredModelFromTopic(topic):
+    tweets = [line.rstrip('\n').lower() for line in open(filename)]
+    # 2. remove stopwords, do tfidf
+    X, vectorizer = remove_stopwords_and_tfidf(tweets)
+    print('done cleaning data')
+    return X, vectorizer
+
+def reduceDimensionality(X, num_dimensions):
+
+    # X is a sparse matrix. Need dense matrix for PCA.
+    # If X too large use - Z=linkage(X.todense(),distance='cosine')
+    X = X.todense()
+    pca = PCA(n_components = num_dimensions) 
+    X = pca.fit_transform(X) 
+    print("done reducing dimension of data to ", num_dimensions, " dimensions")
+    return X, pca
+
+def visualizeTrainedModel(X, labels, num_cluster, num_dimensions):
+    if num_dimensions == 3:
+        colors = ['violet', 'red', 'blue', 'green', 'purple', 'orange', 'black', 'yellow']
+        fig = plt.figure()
+        ax = Axes3D(fig)
+        for i in range(0,num_cluster):
+            clusterName = "Cluster" + str(i+1)
+            ax.scatter(X[labels==i, 0], X[labels==i, 1], X[labels==i, 2], s=50, marker='o', color=colors[i], label=clusterName)
+        ax.legend()
+        plt.show()
+    elif num_dimensions == 2:
+        classes = ["Cluster "+str(i) for i in range(1, num_cluster+1)]
+        scatter = plt.scatter(X[:,0], X[:,1],c = labels, cmap ='rainbow') 
+        plt.legend(handles=scatter.legend_elements()[0], labels=classes)
+        plt.show()
+    else: 
+        raise Exception("NOT YET IMPLEMENTED")
+
+def writeModelToFile(vectorizer, pca, model, file_name):
+    """
+    Write ai model and its vectorizer to filename.
+    """    
+    with open(file_name, 'wb') as f:
+            pickle.dump([vectorizer, pca, model], f)
+    print("model saved to ./",file_name)
+  
+############################ FOR STEP 3 ########################
+def getStoredModelFromTopic(stored_model):
     """
     Finds the file where the ai model for this topic is stored. 
     Then retrieves the vectorizer, model and the number of clusters (for Kmeans)
     Paramters:
-        topic:  int (1-brexit. 2-corona)
+        stored_model:  
     Returns:
         vectorizer: 
+        pca
         model: ai model
         n_cluster: intn(for kmeans)
 
     """
 
-    topic = Topic(topic)
-    if topic==Topic.BREXIT:
-        stored_model = STORED_MODEL
-    elif topic==Topic.CORONA:
-        stored_model = STORED_MODEL_CORONA
+    # topic = Topic(topic)
+    # if topic==Topic.BREXIT:
+    #     stored_model = STORED_MODEL
+    # elif topic==Topic.CORONA:
+    #     stored_model = STORED_MODEL_CORONA
 
     n_cluster = int(stored_model.split("_")[0])
-    vectorizer, model = pickle.load(open(stored_model, 'rb'))
+    vectorizer, pca model = pickle.load(open(stored_model, 'rb'))
 
     return vectorizer, model, n_cluster
 
@@ -57,14 +106,10 @@ def getStreamingTrackFromTopic(topic):
         _track=["corona virus", "corona", "coronavirus"]
     return _track
 
-def writeModelToFile(model, vectorizer, file_name):
-    """
-    Write ai model and its vectorizer to filename.
-    """    
-    with open(file_name, 'wb') as f:
-            pickle.dump([vectorizer, model], f)
-    print("model saved to ./",file_name)
 
+
+
+###### OLD METHODS ##########################
 
 def getModelCentroidsFeatureNames(topic, featuresPerCluster=20):
     """

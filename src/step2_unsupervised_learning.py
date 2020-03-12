@@ -62,6 +62,26 @@ def printClusterCentroidFeatureNames(topic):
         for ind in order_centroids[i, :20]:
             print(' %s' % terms[ind], end='')
 
+def visualize_model_graphically(X, model, n_cluster, num_dimensions=2):
+    labels = model.labels_
+    if num_dimensions == 3:
+        colors = ['violet', 'red', 'blue', 'green', 'purple', 'orange', 'black', 'yellow']
+        fig = plt.figure()
+        ax = Axes3D(fig)
+        for i in range(0,num_cluster):
+            ax.scatter(X[labels==i, 0], X[labels==i, 1], X[labels==i, 2], s=50, marker='o', color=colors[i])
+        plt.show()
+    elif num_dimensions == 2:
+        plt.scatter(X[:,0], X[:,1],c = labels, cmap ='rainbow') 
+        plt.show()
+    else: 
+        raise Exception("NOT YET IMPLEMENTED")
+
+    plt.figure('K-means MODEL')
+    plt.scatter(pca_2d[:, 0], pca_2d[:, 1], c=kmeans.labels_)
+    plt.show()
+
+
 
 if __name__ == '__main__' :
 
