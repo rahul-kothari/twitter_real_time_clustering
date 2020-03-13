@@ -1,7 +1,7 @@
 import pickle
 import numpy as np
-from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
 from mpl_toolkits.mplot3d import Axes3D
 
 from config import *
@@ -87,9 +87,9 @@ def getStoredModelFromTopic(stored_model):
     #     stored_model = STORED_MODEL_CORONA
 
     n_cluster = int(stored_model.split("_")[0])
-    vectorizer, pca model = pickle.load(open(stored_model, 'rb'))
+    vectorizer, pca, model = pickle.load(open(stored_model, 'rb'))
 
-    return vectorizer, model, n_cluster
+    return vectorizer, pca, model, n_cluster
 
 def getStreamingTrackFromTopic(topic):
     """
@@ -106,19 +106,42 @@ def getStreamingTrackFromTopic(topic):
         _track=["corona virus", "corona", "coronavirus"]
     return _track
 
+def createBarGraph(num_cluster, tweetsPerCluster):
+    """
+    Draws a histogram of number of tweets per cluster.
+    
+    :parameters:
+        num_cluster : int - number of clusters in the AI model
+        tweetsPerCluster: dictionary - 
+            keys = cluster number. 
+            value = #tweets classified to be in that cluster.
+    """
+    my_colors = ['brown','pink', 'red', 'green', 'blue', 'cyan','orange','purple']
+    x=[] 
+    y=[]
+    for i in range(1, num_cluster+1):
+        x.append(i)
+        y.append(tweetsPerCluster[i])
 
-
+    fig=plt.figure()    
+    bars = plt.bar(x, y, align='center', color = my_colors, edgecolor='k', linewidth=2)
+    plt.xticks(x)
+    plt.ylabel('#tweets')
+    plt.title('#tweets per cluster')
+    plt.show()
 
 ###### OLD METHODS ##########################
 
-def getModelCentroidsFeatureNames(topic, featuresPerCluster=20):
+def OLDgetModelCentroidsFeatureNames(topic, featuresPerCluster=20):
     """
     Prints first 20 feature of each cluster.
-    topic: int
-    featuresPerCluster: int - how manhy top features per cluster
 
-    Returns:
-    dict = {clusterName : space separated values.}
+    :parameters:
+        topic: int
+        featuresPerCluster: int - how manhy top features per cluster
+
+    :returns:
+        dict = {clusterName : space separated values.}
     """
     vectorizer, model, n_cluster = getStoredModelFromTopic(topic)
     order_centroids = model.cluster_centers_.argsort()[:, ::-1]
@@ -135,7 +158,7 @@ def getModelCentroidsFeatureNames(topic, featuresPerCluster=20):
 
 # # https://matplotlib.org/3.1.1/gallery/lines_bars_and_markers/barchart.html
 # # https://stackoverflow.com/questions/28931224/adding-value-labels-on-a-matplotlib-bar-chart
-def createBarGraph(topic, n_cluster, tweetsPerCluster):
+def createBarGraphAnnotatedAllDKmeans(topic, n_cluster, tweetsPerCluster):
     """
     Creates a bar graph showing the number of tweets per cluster.
     Paramters:
