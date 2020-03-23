@@ -33,6 +33,8 @@
 
 * annotated bar graphs with top 5 feature names.
 
+* DBSCAN somehow not working. Wanted to use it coz i tought it would automatically label noise valyes that can be seen for corona kmeans 5 cluster 2d model.
+
 **NOTES = CONFIG.PY ka topic was not giving anything interesting.** SO I started with seearch params like:
 "brexit and economy
 brexit ADN politics

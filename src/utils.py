@@ -7,6 +7,18 @@ from mpl_toolkits.mplot3d import Axes3D
 from config import *
 from data_cleanup import remove_stopwords_and_tfidf
 
+def saveData(topic, num_dimensions, file_name):
+    """
+    Saves X( cleaned data), vectorizer, pca (IN THAT ORDER) for a topic for a number of dimensions to data folder. So you don't have to keep computing it.    
+    """
+    
+    X, vectorizer = getCleanedData(topic)
+    X, pca = reduceDimensionality(X, num_dimensions)
+
+    with open(file_name, 'wb') as f:
+            pickle.dump([X, vectorizer, pca], f)
+    print("data saved to ./",file_name)
+
 def getCleanedData(topic):
     """
     Gets all tweets from corresponding file. 
@@ -39,6 +51,32 @@ def reduceDimensionality(X, num_dimensions):
     print("done reducing dimension of data to ", num_dimensions, " dimensions")
     return X, pca
 
+def loadCleanedReducedDimensionalityData(topic, num_dimensions):
+    """
+    Load the cleaned and reduced dimensinality data.
+
+    :parameters:
+        topic - int (1/2)
+        num_dimensions - 2d or 3d model
+    
+    :returns:
+        X, vectorizer, pca
+    """
+
+    topic = Topic(topic)
+    if topic==Topic.BREXIT and num_dimensions==2:
+        file_name = "data/brexit_cleaned_2d"
+    elif  topic==Topic.BREXIT and num_dimensions==3:
+        file_name = "data/brexit_cleaned_3d"
+    if  topic==Topic.CORONA and num_dimensions==2:
+        file_name = "data/corona_cleaned_2d"
+    if  topic==Topic.CORONA and num_dimensions==3:
+        file_name = "data/corona_cleaned_3d"
+
+    X, vectorizer, pca = pickle.load(open(file_name, 'rb'))
+
+    return X, vectorizer, pca
+    
 def visualizeTrainedModel(X, labels, num_cluster, num_dimensions):
     if num_dimensions == 3:
         colors = ['violet', 'red', 'blue', 'green', 'purple', 'orange', 'black', 'yellow']
