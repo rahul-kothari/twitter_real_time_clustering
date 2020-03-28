@@ -123,5 +123,5 @@ dmypy.json
 
 # my stuff
 src/config.py
-/data
+/data/*.txt
 *.pkl

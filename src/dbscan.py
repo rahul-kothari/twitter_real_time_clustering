@@ -23,11 +23,11 @@ num_dimensions = 3
 X, vectorizer, pca = loadCleanedReducedDimensionalityData(topic, num_dimensions)
 
 # #optimal value for min_samples:
-min_samples =  10# 2 * num_dimensions #TODO DETERMINE!
+min_samples =  3# 2 * num_dimensions #TODO DETERMINE!
 #try for varying values!
 epsDictCorona3d = {6 : 0.00379008, 9: 0.00323422, 12: 0.00332292, 
     15: 0.00338888, 18: 0.00330463, 50: 0.00359, 10: 0.00374487}
-epsDictBrexit3d = {10: 0.00097736}
+epsDictBrexit3d = {10: 0.00097736, 1000: 0.00125847}
 
 # G = gridspec.GridSpec(4, 4)
 # ax1 = plt.subplot(G[0, :])
@@ -43,6 +43,8 @@ model = DBSCAN(eps = eps, min_samples = min_samples)
 model.fit(X) 
 labels = model.labels_
 n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
+print(n_clusters)
+print(set(labels))
 print(min_samples, " - num clusters = ", n_clusters, " Silhoutte Score %0.3f" % metrics.silhouette_score(X, labels))
 print('done trianing model')
 

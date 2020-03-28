@@ -34,6 +34,12 @@
 * annotated bar graphs with top 5 feature names.
 
 * DBSCAN somehow not working. Wanted to use it coz i tought it would automatically label noise valyes that can be seen for corona kmeans 5 cluster 2d model.
+* OPTICS - also showing same problem
+* DBSCAN, OPTICS - having min_samples very big like 1000 gave all noises. (WHY?). Only small gave variety. But that gave way too much variety. Small min_samples have like 300 clusters lol
+* BIRCH - Doing BIRCH on full dimensions gave only 1 cluster.
+* BIRCH CORONA 2D - num_cluster is always 8 despite branching factor. Varying threshold - clearly sabh bakwas!
+
+* ***take pros and cons of each model from here:https://scikit-learn.org/stable/modules/mixture.html#mixture***
 
 **NOTES = CONFIG.PY ka topic was not giving anything interesting.** SO I started with seearch params like:
 "brexit and economy
