@@ -6,7 +6,7 @@ from tweepy.streaming import StreamListener
 
 from config import CONSUMER_API_SECRET,CONSUMER_KEY,ACCESS_TOKEN,ACCESS_TOKEN_SECRET 
 from data_cleanup import remove_urls_users_punctuations
-from utils import getStreamingTrackFromTopic, getStoredModelFromTopic, createBarGraph
+from utils import getStreamingTrackFromTopic, getStoredModel, createBarGraph
 
 # OAuth process
 auth = OAuthHandler(CONSUMER_KEY, CONSUMER_API_SECRET)
@@ -18,7 +18,7 @@ class TwitterListener(StreamListener):
     def __init__(self, filename):
         """filename of the model"""
         self.sleep_time = 60 #in seconds 
-        self.vectorizer, self.pca, self.model, self.n_cluster = getStoredModelFromTopic(filename)
+        self.vectorizer, self.pca, self.model, self.n_cluster = getStoredModel(filename)
         self.clusterToTweetsText = dict()
         self.clusterToNumberOfTweets = dict()
         self._initializeDictionary()

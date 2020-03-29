@@ -104,12 +104,12 @@ def writeModelToFile(vectorizer, pca, model, file_name):
     print("model saved to ./",file_name)
   
 ############################ FOR STEP 3 ########################
-def getStoredModelFromTopic(stored_model):
+def getStoredModel(filename):
     """
     Finds the file where the ai model for this topic is stored. 
     Then retrieves the vectorizer, model and the number of clusters (for Kmeans)
     Paramters:
-        stored_model:  
+        filename:  
     Returns:
         vectorizer: 
         pca
@@ -124,8 +124,8 @@ def getStoredModelFromTopic(stored_model):
     # elif topic==Topic.CORONA:
     #     stored_model = STORED_MODEL_CORONA
 
-    n_cluster = int(stored_model.split("_")[0])
-    vectorizer, pca, model = pickle.load(open(stored_model, 'rb'))
+    n_cluster = int(filename.split("_")[0])
+    vectorizer, pca, model = pickle.load(open(filename, 'rb'))
 
     return vectorizer, pca, model, n_cluster
 

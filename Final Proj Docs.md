@@ -1,16 +1,5 @@
 ## TODO: 
-1. 
-- Try other unsupervised algorithms:
-    * Ward Hierarchichal(Agglomerative clustering) 
-        - EXPERIMENT WITH WARD, SINGLE, AVERAGE LINKAGE, COMPLETE LINKAGE, cosine distance
-    * DBSCAN - coz unlike kmeans jaha clusters can only be convex, here anything
-        - TODO: DETERMINE MIN_SAMPLES.
-		- OPTICS INSTEAD OF DBSCAN?
-    * Spectral clustering
-    * https://scikit-learn.org/stable/modules/clustering.html#overview-of-clustering-methods
-
-- Represent KMEANS graphically
-
+1. GMM - Try with higher cluster numbers.... WHY IS bic so negative?
 2. Unsupervised learning validation techniques
     * ROC curves, 
     * matrix validation etc.
@@ -36,8 +25,8 @@
 * DBSCAN somehow not working. Wanted to use it coz i tought it would automatically label noise valyes that can be seen for corona kmeans 5 cluster 2d model.
 * OPTICS - also showing same problem
 * DBSCAN, OPTICS - having min_samples very big like 1000 gave all noises. (WHY?). Only small gave variety. But that gave way too much variety. Small min_samples have like 300 clusters lol
-* BIRCH - Doing BIRCH on full dimensions gave only 1 cluster.
-* BIRCH CORONA 2D - num_cluster is always 8 despite branching factor. Varying threshold - clearly sabh bakwas!
+* BIRCH - Doing BIRCH on full dimensions gave only 1 cluster. num_cluster is always same despite branching factor. Varying threshold - se nonsense. Problem: clusters overlap.
+* Guassian Mixtures - kmeans clusters are only circular (shown in Kmeans Corona 2d pic). GMM can be elliptical! https://jakevdp.github.io/PythonDataScienceHandbook/05.12-gaussian-mixtures.html
 
 * ***take pros and cons of each model from here:https://scikit-learn.org/stable/modules/mixture.html#mixture***
 

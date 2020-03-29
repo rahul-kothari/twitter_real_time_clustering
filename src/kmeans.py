@@ -37,3 +37,21 @@ visualizeTrainedModel(X, labels, num_cluster, num_dimensions)
 
 file_name = input("Enter filename to store data in [WITHOUT .pkl extension]: ")+".pkl"
 writeModelToFile(vectorizer, pca, model, file_name)
+
+def kmeansClustersAreCircular(X, model):
+    from scipy.spatial.distance import cdist
+    from matplotlib import pyplot as plt
+    
+    labels = model.labels_
+    centers = model.cluster_centers_
+    # plot the input data
+    ax = plt.gca()
+    ax.axis('equal')
+    ax.scatter(X[:, 0], X[:, 1], c=labels, s=40, cmap='rainbow', zorder=2)
+    # plot the representation of the KMeans model
+    radii = [cdist(X[labels == i], [center]).max()
+                for i, center in enumerate(centers)]
+    for c, r in zip(centers, radii):
+        ax.add_patch(plt.Circle(c, r, fc='#CCCCCC', lw=3, alpha=0.5, zorder=1))
+    plt.title("KMeans Corona 2D Model - Clusters are only Circular:")
+    plt.show()
