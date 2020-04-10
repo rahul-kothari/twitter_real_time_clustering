@@ -55,3 +55,17 @@ def kmeansClustersAreCircular(X, model):
         ax.add_patch(plt.Circle(c, r, fc='#CCCCCC', lw=3, alpha=0.5, zorder=1))
     plt.title("KMeans Corona 2D Model - Clusters are only Circular:")
     plt.show()
+	
+def getClusterFeatures(dimensionalityReduced, pca=None, km)
+	if dimensionalityReduced:
+        original_space_centroids = pca.inverse_transform(km.cluster_centers_)
+        order_centroids = original_space_centroids.argsort()[:, ::-1]
+    else:
+        order_centroids = km.cluster_centers_.argsort()[:, ::-1]
+
+    terms = vectorizer.get_feature_names()
+    for i in range(true_k):
+        print("Cluster %d:" % i, end='')
+        for ind in order_centroids[i, :10]:
+            print(' %s' % terms[ind], end='')
+        print()

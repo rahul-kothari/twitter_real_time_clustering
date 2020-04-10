@@ -1,12 +1,26 @@
 ## TODO: 
-1. GMM - Try with higher cluster numbers.... WHY IS bic so negative?
-2. Unsupervised learning validation techniques
+
+1. KMEANS-
+	- Can get cluster feature names even after PCA. (https://scikit-learn.org/stable/auto_examples/text/plot_document_clustering.html#sphx-glr-auto-examples-text-plot-document-clustering-py)
+	refer code in kmeans.py
+	- Do MinIbATCH.
+1. Agglomerative 
+	- compare different linkage techniques: https://scikit-learn.org/stable/auto_examples/cluster/plot_digits_linkage.html#sphx-glr-auto-examples-cluster-plot-digits-linkage-py
+2. DBSCAN
+	- you are getting eps based on cosine value. So DBSCAN bhi on cosine distance!
+3. birch -
+	try on full dimensions.
+	graph - remove border of har dot lol
+3. GMM - Try with higher cluster numbers.... WHY IS bic so negative?
+	https://towardsdatascience.com/gaussian-mixture-model-clusterization-how-to-select-the-number-of-components-clusters-553bef45f6e4
+4. all models jaha overlap seems to happen - rotate that graph! overlap shayad kyunki z level sabke same hai! (gmm, birch)
+
+5. Unsupervised learning validation techniques
     * ROC curves, 
     * matrix validation etc.
 
     - Compare other models in these models.
 
-5. Update Gantt chart
 
 ## THESIS RELATED NOTES/CHANGES/ADDITIONS/THINGS TO TALK ABOUT:
 
