@@ -19,6 +19,15 @@ def saveData(topic, num_dimensions, file_name):
             pickle.dump([X, vectorizer, pca], f)
     print("data saved to ./",file_name)
 
+def reduceDimensionality(X, num_dimensions):
+    # X is a sparse matrix. Need dense matrix for PCA.
+    # If X too large use - Z=linkage(X.todense(),distance='cosine')
+    X = X.todense()
+    pca = PCA(n_components = num_dimensions) 
+    X = pca.fit_transform(X) 
+    print("done reducing dimension of data to ", num_dimensions, " dimensions")
+    return X, pca
+
 def getCleanedData(topic):
     """
     Gets all tweets from corresponding file. 
@@ -40,16 +49,6 @@ def getCleanedData(topic):
     X, vectorizer = remove_stopwords_and_tfidf(tweets)
     print('done cleaning data')
     return X, vectorizer
-
-def reduceDimensionality(X, num_dimensions):
-
-    # X is a sparse matrix. Need dense matrix for PCA.
-    # If X too large use - Z=linkage(X.todense(),distance='cosine')
-    X = X.todense()
-    pca = PCA(n_components = num_dimensions) 
-    X = pca.fit_transform(X) 
-    print("done reducing dimension of data to ", num_dimensions, " dimensions")
-    return X, pca
 
 def loadCleanedReducedDimensionalityData(topic, num_dimensions):
     """
@@ -99,8 +98,12 @@ def writeModelToFile(vectorizer, pca, model, file_name):
     """
     Write ai model and its vectorizer to filename.
     """    
-    with open(file_name, 'wb') as f:
-            pickle.dump([vectorizer, pca, model], f)
+    if not pca==None:
+        with open(file_name, 'wb') as f:
+                pickle.dump([vectorizer, pca, model], f)
+    else:
+        with open(file_name, 'wb') as f:
+                pickle.dump([vectorizer, model], f)
     print("model saved to ./",file_name)
   
 ############################ FOR STEP 3 ########################
@@ -161,41 +164,19 @@ def createBarGraph(num_cluster, tweetsPerCluster):
         x.append(i)
         y.append(tweetsPerCluster[i])
 
-    fig=plt.figure()    
-    bars = plt.bar(x, y, align='center', color = my_colors, edgecolor='k', linewidth=2)
-    plt.xticks(x)
-    plt.ylabel('#tweets')
-    plt.title('#tweets per cluster')
+    fig = plt.figure(figsize=(8, 6))
+    fig.subplots_adjust(hspace=.35, bottom=.02)
+    ax = fig.add_subplot(2, 1, 1)
+    bars = ax.bar(x, y, align='center', color = my_colors, edgecolor='k', linewidth=2)
+    ax.xticks(x)
+    ax.ylabel('#tweets')
+    ax.title('#tweets per cluster')
+
+    ax = fig.add_subplot(2,1,2)
+    
     plt.show()
 
 ###### OLD METHODS ##########################
-
-def OLDgetModelCentroidsFeatureNames(topic, featuresPerCluster=20):
-    """
-    Prints first 20 feature of each cluster.
-
-    :parameters:
-        topic: int
-        featuresPerCluster: int - how manhy top features per cluster
-
-    :returns:
-        dict = {clusterName : space separated values.}
-    """
-    vectorizer, model, n_cluster = getStoredModelFromTopic(topic)
-    order_centroids = model.cluster_centers_.argsort()[:, ::-1]
-    terms = vectorizer.get_feature_names()
-
-    feature_names = dict()
-    for i in range(n_cluster):
-        names=[]
-        for ind in order_centroids[i, :featuresPerCluster]:
-            names.append(terms[ind])
-        feature_names[(i+1)] = " ".join(names)
-    
-    return feature_names
-
-# # https://matplotlib.org/3.1.1/gallery/lines_bars_and_markers/barchart.html
-# # https://stackoverflow.com/questions/28931224/adding-value-labels-on-a-matplotlib-bar-chart
 def createBarGraphAnnotatedAllDKmeans(topic, n_cluster, tweetsPerCluster):
     """
     Creates a bar graph showing the number of tweets per cluster.

@@ -19,12 +19,29 @@ def doElbowMethod(X):
     plt.title('Elbow Method For Optimal k')
     plt.show()
 
+def getClusterFeatures(isDimensionalityReduced, km, pca, n_cluster):
+    """
+    Get cluster centroids feature names
+    """
+    if isDimensionalityReduced:
+        original_space_centroids = pca.inverse_transform(km.cluster_centers_)
+        order_centroids = original_space_centroids.argsort()[:, ::-1]
+    else:
+        order_centroids = km.cluster_centers_.argsort()[:, ::-1]
+
+    terms = vectorizer.get_feature_names()
+    for i in range(n_cluster):
+        print("Cluster %d:" % i, end='')
+        for ind in order_centroids[i, :10]:
+            print(' %s' % terms[ind], end='')
+        print()
+
 
 topic = int(input("Enter a topic [1 for brexit / 2 for corona]: "))
-X, vectorizer = getCleanedData(topic)
-
 num_dimensions = 3
-X, pca = reduceDimensionality(X, num_dimensions)
+X, vectorizer, pca = loadCleanedReducedDimensionalityData(topic, num_dimensions)
+# X, vectorizer = getCleanedData(topic)
+# X, pca = reduceDimensionality(X, num_dimensions)
 
 doElbowMethod(X)
 
@@ -33,6 +50,8 @@ model = KMeans(n_clusters=num_cluster, init='k-means++', max_iter=100, n_init=1)
 model.fit(X)
 labels = model.labels_
 
+isDimensionalityReduced = False if num_dimensions=None else True
+getClusterFeatures(isDimensionalityReduced, model, pca, num_cluster)
 visualizeTrainedModel(X, labels, num_cluster, num_dimensions)
 
 file_name = input("Enter filename to store data in [WITHOUT .pkl extension]: ")+".pkl"
@@ -56,16 +75,4 @@ def kmeansClustersAreCircular(X, model):
     plt.title("KMeans Corona 2D Model - Clusters are only Circular:")
     plt.show()
 	
-def getClusterFeatures(dimensionalityReduced, pca=None, km)
-	if dimensionalityReduced:
-        original_space_centroids = pca.inverse_transform(km.cluster_centers_)
-        order_centroids = original_space_centroids.argsort()[:, ::-1]
-    else:
-        order_centroids = km.cluster_centers_.argsort()[:, ::-1]
 
-    terms = vectorizer.get_feature_names()
-    for i in range(true_k):
-        print("Cluster %d:" % i, end='')
-        for ind in order_centroids[i, :10]:
-            print(' %s' % terms[ind], end='')
-        print()

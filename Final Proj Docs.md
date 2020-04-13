@@ -15,6 +15,8 @@
 	https://towardsdatascience.com/gaussian-mixture-model-clusterization-how-to-select-the-number-of-components-clusters-553bef45f6e4
 4. all models jaha overlap seems to happen - rotate that graph! overlap shayad kyunki z level sabke same hai! (gmm, birch)
 
+5. STEP 3 - ADD MODEL VISULIZATION TO THE BAR GRAPH.
+
 5. Unsupervised learning validation techniques
     * ROC curves, 
     * matrix validation etc.
@@ -73,7 +75,6 @@ corona virus hospitals
 5. Realization ki words like "boris johnson" should be treated as one instead of 2 separate. Same for phrases.
 6. Words like "BBC NEWS" etc. should be ideally ignored.
 
-interestingly, after doing change 4 - elbow method didn't give any good data. SO left it with initial kmeans.
 
 ## STEPS:
 ### ==================0. Create virtual environment==============
