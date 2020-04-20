@@ -1,38 +1,11 @@
 ## TODO: 
 
-1. KMEANS-
-	- Can get cluster feature names even after PCA. (https://scikit-learn.org/stable/auto_examples/text/plot_document_clustering.html#sphx-glr-auto-examples-text-plot-document-clustering-py)
-	refer code in kmeans.py
-	- Do MinIbATCH.
-1. Agglomerative 
-	- compare different linkage techniques: https://scikit-learn.org/stable/auto_examples/cluster/plot_digits_linkage.html#sphx-glr-auto-examples-cluster-plot-digits-linkage-py
-2. DBSCAN
-	- you are getting eps based on cosine value. So DBSCAN bhi on cosine distance!
-3. birch -
-	try on full dimensions.
-	graph - remove border of har dot lol
-3. GMM - Try with higher cluster numbers.... WHY IS bic so negative?
-	https://towardsdatascience.com/gaussian-mixture-model-clusterization-how-to-select-the-number-of-components-clusters-553bef45f6e4
-4. all models jaha overlap seems to happen - rotate that graph! overlap shayad kyunki z level sabke same hai! (gmm, birch)
-
-5. STEP 3 - ADD MODEL VISULIZATION TO THE BAR GRAPH.
-
-5. Unsupervised learning validation techniques
-    * ROC curves, 
-    * matrix validation etc.
-
-    - Compare other models in these models.
-
+1. GMM <- redo but this time get model from file!!!>
 
 ## THESIS RELATED NOTES/CHANGES/ADDITIONS/THINGS TO TALK ABOUT:
 
 **To write in Thesis**:
 * 3 types of anamolies (point, collective, contextual). Yours is collective. Call them topics coz yours is that
-* talk about your pipeline, snippets of scripts, graphically represent clusters,..
-* UML dg like seqeunce, activity dg shows collection of tweets...
-* testing related bs
-
-* doing corona -> I would get utf8 decoding errors coz chinese/arabic/hindi characters would pass through. Had to mannually delete them by identifyig where they came.
 
 * people writing with abbreviations and typos also cause problems.
 
@@ -43,8 +16,6 @@
 * DBSCAN, OPTICS - having min_samples very big like 1000 gave all noises. (WHY?). Only small gave variety. But that gave way too much variety. Small min_samples have like 300 clusters lol
 * BIRCH - Doing BIRCH on full dimensions gave only 1 cluster. num_cluster is always same despite branching factor. Varying threshold - se nonsense. Problem: clusters overlap.
 * Guassian Mixtures - kmeans clusters are only circular (shown in Kmeans Corona 2d pic). GMM can be elliptical! https://jakevdp.github.io/PythonDataScienceHandbook/05.12-gaussian-mixtures.html
-
-* ***take pros and cons of each model from here:https://scikit-learn.org/stable/modules/mixture.html#mixture***
 
 **NOTES = CONFIG.PY ka topic was not giving anything interesting.** SO I started with seearch params like:
 "brexit and economy
@@ -64,6 +35,15 @@ corona virus jobs
 corona virus sports
 corona virus economy/banks/stock market
 corona virus hospitals
+
+### FUTURE STUFF
+* Try cosine distances
+* try other dimension reduction methods / kitne dimensions
+* try miniBatch
+* phrases like boris and johnson should be treated as one.
+* remove things like "bbc", "via" etc....
+* try optics instead of dbscan
+
 
 ### CHANGES:
 1. Collected data as above because the general form gave very generic data, and often very slangy/ useless tweets like "brexit." "gone" that are created because we remove all pics, websites, user mentions.

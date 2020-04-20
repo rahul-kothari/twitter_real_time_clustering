@@ -125,3 +125,4 @@ dmypy.json
 src/config.py
 /data/*.txt
 *.pkl
+/models/*

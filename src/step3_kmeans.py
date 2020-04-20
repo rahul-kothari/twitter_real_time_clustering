@@ -1,12 +1,11 @@
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
-
 from utils import *
 
 
 def doElbowMethod(X):
     Sum_of_squared_distances = []
-    K=range(1,15)
+    K=range(3,15)
     for k in K:
         print("elbow method - doing kmeans for K=",k)
         model = KMeans(n_clusters=k, init='k-means++', max_iter=100, n_init=1)
@@ -19,27 +18,20 @@ def doElbowMethod(X):
     plt.title('Elbow Method For Optimal k')
     plt.show()
 
-def getClusterFeatures(isDimensionalityReduced, km, pca, n_cluster):
-    """
-    Get cluster centroids feature names
-    """
-    if isDimensionalityReduced:
-        original_space_centroids = pca.inverse_transform(km.cluster_centers_)
-        order_centroids = original_space_centroids.argsort()[:, ::-1]
-    else:
-        order_centroids = km.cluster_centers_.argsort()[:, ::-1]
-
-    terms = vectorizer.get_feature_names()
-    for i in range(n_cluster):
-        print("Cluster %d:" % i, end='')
-        for ind in order_centroids[i, :10]:
-            print(' %s' % terms[ind], end='')
-        print()
-
-
 topic = int(input("Enter a topic [1 for brexit / 2 for corona]: "))
-num_dimensions = 3
-X, vectorizer, pca = loadCleanedReducedDimensionalityData(topic, num_dimensions)
+num_dimensions = input("How many dimensions should the dataset be? [2/3/ full]: ")
+
+if not num_dimensions == "full":
+    num_dimensions = int(num_dimensions)
+    isDimensionalityReduced = True
+    X, vectorizer, pca = loadCleanedReducedDimensionalityData(topic, num_dimensions)
+else:
+    num_dimensions = None
+    isDimensionalityReduced = False
+    X, vectorizer = getCleanedData(topic)
+    print(X.shape)
+    pca = None
+    
 # X, vectorizer = getCleanedData(topic)
 # X, pca = reduceDimensionality(X, num_dimensions)
 
@@ -50,9 +42,11 @@ model = KMeans(n_clusters=num_cluster, init='k-means++', max_iter=100, n_init=1)
 model.fit(X)
 labels = model.labels_
 
-isDimensionalityReduced = False if num_dimensions=None else True
-getClusterFeatures(isDimensionalityReduced, model, pca, num_cluster)
-visualizeTrainedModel(X, labels, num_cluster, num_dimensions)
+getClusterFeatures(model, num_cluster, vectorizer, isDimensionalityReduced, pca)
+
+if isDimensionalityReduced:
+    title = "KMEANS %s - %d Dimensions" % (topicName, num_dimensons)
+    visualizeTrainedModel(X, labels, num_cluster, num_dimensions, title)
 
 file_name = input("Enter filename to store data in [WITHOUT .pkl extension]: ")+".pkl"
 writeModelToFile(vectorizer, pca, model, file_name)

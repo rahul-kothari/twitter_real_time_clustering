@@ -2,54 +2,52 @@ import numpy as np
 from sklearn.cluster import DBSCAN 
 from sklearn.neighbors import NearestNeighbors
 from sklearn import metrics
-from utils import loadCleanedReducedDimensionalityData, writeModelToFile, getCleanedData, reduceDimensionality
+from utils import * 
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from config import Topic
 
-
-def getBestEpsilon(X, min_samples):
+def getBestEpsilon(topicName, num_dimensions, X, min_samples):
     #optimal value of eps:
     nbrs = NearestNeighbors(n_neighbors=min_samples, metric='cosine').fit(X)
     distances, indices = nbrs.kneighbors(X)
     distances = distances[:,1]
     distances = np.sort(distances, axis=0)
     plt.plot(distances)
-    plt.title("min_samples: %d" % min_samples)
+    plt.title("%s - %d dimensions - min_samples: %d" % (topicName, num_dimensions, min_samples))
     plt.show()
 
-#topic=int(input("Which topic (1 for brexit / 2 for corona)?: "))
-topic = 1
-num_dimensions = 3
+
+topic = int(input("Enter a topic [1 for brexit / 2 for corona]: "))
+topicName = Topic(topic).name
+num_dimensions = input("How many dimensions should the dataset be? [2/3]: ")
+
+# if not num_dimensions == "full":
+num_dimensions = int(num_dimensions)
+isDimensionalityReduced = True
 X, vectorizer, pca = loadCleanedReducedDimensionalityData(topic, num_dimensions)
+# else:
+    # num_dimensions = None
+    # isDimensionalityReduced = False
+    # X, vectorizer = getCleanedData(topic)
+    # pca = None
+    # X = X.todense()
 
-# #optimal value for min_samples:
-min_samples =  3# 2 * num_dimensions #TODO DETERMINE!
-#try for varying values!
-epsDictCorona3d = {6 : 0.00379008, 9: 0.00323422, 12: 0.00332292, 
-    15: 0.00338888, 18: 0.00330463, 50: 0.00359, 10: 0.00374487}
-epsDictBrexit3d = {10: 0.00097736, 1000: 0.00125847}
+min_sample_Values = {"BREXIT": {2: 50, 3:40}, "CORONA": {2:50, 3:50}}
+min_samples = min_sample_Values[topicName][num_dimensions]
+# min_samples = 2 * num_dimensions
+getBestEpsilon(topicName, num_dimensions, X, min_samples)
 
-# G = gridspec.GridSpec(4, 4)
-# ax1 = plt.subplot(G[0, :])
-
-# for min_samples in range (4, 50, 3):
-if not min_samples in epsDictBrexit3d:
-    getBestEpsilon(X, min_samples)
-    eps = float(input("Enter the best epsilon val: "))
-    epsDictBrexit3d[min_samples] = eps
-else:
-    eps = epsDictBrexit3d[min_samples]
-model = DBSCAN(eps = eps, min_samples = min_samples)
+eps = float(input("Enter the best epsilon val: "))
+model = DBSCAN(eps = eps, min_samples = min_samples, metric='cosine')
 model.fit(X) 
 labels = model.labels_
 n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
 print(n_clusters)
-print(set(labels))
-print(min_samples, " - num clusters = ", n_clusters, " Silhoutte Score %0.3f" % metrics.silhouette_score(X, labels))
 print('done trianing model')
 
 unique_labels = set(labels)
-colors = [plt.cm.gnuplot2(each)
+colors = [plt.cm.nipy_spectral(each)
           for each in np.linspace(0, 3, len(unique_labels))]
 # https://matplotlib.org/3.2.0/tutorials/colors/colormaps.html - for colourmaps!
 if num_dimensions == 3:
@@ -60,7 +58,8 @@ if num_dimensions == 3:
     for i in range(0, len(unique_labels)-1): 
         clusterName = "Cluster" + str(i+1)
         ax.scatter(X[labels==i, 0], X[labels==i, 1], X[labels==i, 2], color=colors[i], label=clusterName)
-    ax.legend()
+    plt.title("DBSCAN %s - %d Dimensions - %d clusters" % (topicName, num_dimensions, n_clusters))
+    plt.legend()
     plt.show()
 
 elif num_dimensions == 2:
@@ -69,13 +68,14 @@ elif num_dimensions == 2:
     for i in range(0, len(unique_labels)-1): 
         clusterName = "Cluster" + str(i+1)
         plt.scatter(X[labels==i, 0], X[labels==i, 1], color=colors[i], label=clusterName)
-    plt.legend()
+    plt.title("DBSCAN %s - %d Dimensions - %d clusters" % (topicName, num_dimensions, n_clusters))
+    # plt.legend()
     plt.show()
 else: 
     raise Exception("NOT YET IMPLEMENTED")
 
-# file_name = input("Enter filename to store data in [WITHOUT .pkl extension]: ")+".pkl"
-# writeModelToFile(vectorizer, pca, model, file_name)
+file_name = input("Enter filename to store data in [WITHOUT .pkl extension]: ")+".pkl"
+writeModelToFile(vectorizer, pca, model, file_name)
 
 """
 LINKS

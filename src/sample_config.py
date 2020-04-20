@@ -1,23 +1,25 @@
-import enum
-
-class Topic(enum.Enum):
-        BREXIT = 1
-        CORONA = 2
-
-# Twitter Consumer API Key
-CONSUMER_KEY = "XXX"
-CONSUMER_API_SECRET = "XXX""
+#  Twitter Consumer API Key
+CONSUMER_KEY = "xxx"
+CONSUMER_API_SECRET = "xxx"
 
 # Twitter Access Token
-ACCESS_TOKEN = "XXX"
-ACCESS_TOKEN_SECRET = "XXX"
+ACCESS_TOKEN = "xxx"
+ACCESS_TOKEN_SECRET = "xxx"
 
+import enum
+# Using enum class create enumerations
+class Topic(enum.Enum):
+   BREXIT = 1
+   CORONA = 2
+###############################
+# STEP 1 - MINE TWEETS
+###############################
 # NO OF TWEETS NEEDED
 NUM_OF_TWEETS_NEEDED = 10000
 # file to store tweets (testing or otherwise)
-FILE_PATH = "data/brexit.txt"
+FILE_PATH_BREXIT = "data/brexit.txt"
 FILE_PATH_CORONA = "data/corona.txt"
-FILE_PATH3 = "data/trial.txt" # for testing
+FILE_PATH_TRIAL = "data/trial.txt" # for testing
 
 # TOPIC (testing or otherwise)
 TOPIC = "brexit OR #brexitShambles OR #stopbrexit OR #remain OR #brexitdeal" + \
@@ -29,10 +31,19 @@ TOPIC = "brexit OR #brexitShambles OR #stopbrexit OR #remain OR #brexitdeal" + \
         "OR #economy OR #stockMarket OR #labour OR #tories OR No-Deal"+\
         "-filter:retweets"
 # from:RahulKo96245846
+TOPIC_BREXIT_2 = "Brexit -filter:retweets"
+TOPIC_CORONA = "coronavirus -filter:retweets" 
 
-TOPIC2 = "Brexit sterling-filter:retweets"
+###############################
+# STEP 3 - STREAM TWEETS
+###############################
+STORED_MODEL_BREXIT = "9_cluster_kmeans_brexit_allD.pkl"
+STORED_MODEL_CORONA ="9_cluster_kmeans_corona_allD.pkl"
 
-TOPIC_CORONA = "coronavirus OR corona virus -filter:retweets" 
+STREAMING_TRACK_BREXIT = ["brexit nhs", "brexit tech", "brexit economy", "brexit pound", "brexit jobs", 
+                        "brexit eu", "brexit business", "brexit trade"]
+STREAMING_TRACK_CORONA = ["coronavirus nhs", "coronavirus economy", "coronavirus wuhan", 
+                "coronavirus trump", "coronavirus jobs", "coronavirus stock market"]
 
 # Stop Words
 STOPWORDS = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', "you're", "you've", "you'll", "you'd", 'your', 'yours', 'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she', "she's", 'her', 'hers', 'herself', 'it', "it's", 'its', 'itself', 'they', 'them', 'their', 'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'this', 'that', "that'll", 'these', 'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having', 'do', 'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as', 'until', 'while', 'of', 'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'to', 'from', 'up', 'down', 'in', 'out', 'on', 'off', 'over', 'under', 'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 's', 't', 'can', 'will', 'just', 'don', "don't", 'should', "should've", 'now', 'd', 'll', 'm', 'o', 're', 've', 'y', 'ain', 'aren', "aren't", 'couldn', "couldn't", 'didn', "didn't", 'doesn', "doesn't", 'hadn', "hadn't", 'hasn', "hasn't", 'haven', "haven't", 'isn', "isn't", 'ma', 'mightn', "mightn't", 'mustn', "mustn't", 'needn', "needn't", 'shan', "shan't", 'shouldn', "shouldn't", 'wasn', "wasn't", 'weren', "weren't", 'won', "won't", 'wouldn', "wouldn't"]

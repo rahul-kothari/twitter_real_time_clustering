@@ -45,13 +45,13 @@ def get_tweets(num_of_tweets=NUM_OF_TWEETS_NEEDED, search_criteria=TOPIC2, lang=
 
 if __name__ == '__main__' :
 	# get tweets and put it in a file
-	print("Writing tweets to"+ FILE_PATH3)
+	print("Writing tweets to"+ FILE_PATH_TRIAL)
 	print("Which topic to get tweets about?")
 	print("1. Brexit (TOPIC2 in config.py)")
 	print("2. Corona (TOPIC_CORONA in config.py)")
 	topic=Topic(int(input("Which topic (1/2)?: ")))
 	# raises ValueError automatically.
 	if(topic==Topic.BREXIT):
-		get_tweets(search_criteria=TOPIC2)
+		get_tweets(search_criteria=TOPIC_BREXIT_2)
 	elif(topic==Topic.CORONA):
 		get_tweets(search_criteria=TOPIC_CORONA)

@@ -3,10 +3,11 @@ import time
 
 from tweepy import Stream, OAuthHandler
 from tweepy.streaming import StreamListener
+import matplotlib.pyplot as plt
 
-from config import CONSUMER_API_SECRET,CONSUMER_KEY,ACCESS_TOKEN,ACCESS_TOKEN_SECRET 
+from config import * 
 from data_cleanup import remove_urls_users_punctuations
-from utils import getStreamingTrackFromTopic, getStoredModel, createBarGraph
+from utils import getStoredModel, createBarGraph, getFinalModelForStreaming
 
 # OAuth process
 auth = OAuthHandler(CONSUMER_KEY, CONSUMER_API_SECRET)
@@ -15,13 +16,18 @@ auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 # listener that handles streaming data
 class TwitterListener(StreamListener):
 
-    def __init__(self, filename):
-        """filename of the model"""
-        self.sleep_time = 60 #in seconds 
-        self.vectorizer, self.pca, self.model, self.n_cluster = getStoredModel(filename)
+    def __init__(self, topic):
+        """topic of the model"""
+        self.topic = topic
+        self.topicName = Topic(topic).name
+        filename,self.vectorizer, self.pca, self.model, self.n_cluster = getFinalModelForStreaming(topic)
+        split = filename.split("_")
+        self.model_name = split[2] + " - " + split[-1][:-4]
+        self.isDimensionalityReduced = False
         self.clusterToTweetsText = dict()
         self.clusterToNumberOfTweets = dict()
         self._initializeDictionary()
+        self.sleep_time = 60 #in seconds 
         self.count=0
 
     def _initializeDictionary(self):
@@ -30,7 +36,6 @@ class TwitterListener(StreamListener):
             self.clusterToTweetsText[cluster]=list()
     
     def _prettyPrintClusterToTweets(self):
-
         for cluster in self.clusterToTweetsText.keys():
             print(cluster, ' :')
             for tweet in self.clusterToTweetsText[cluster]:
@@ -50,8 +55,9 @@ class TwitterListener(StreamListener):
         cleaned_text = remove_urls_users_punctuations(text)
         print(cleaned_text)
         X = self.vectorizer.transform([cleaned_text]) 
-        X = X.todense()
-        X = self.pca.transform(X)
+        if self.isDimensionalityReduced:
+            X = X.todense()
+            X = self.pca.transform(X)
         predicted_cluster = int(self.model.predict(X))+1  
         print(predicted_cluster)
         self.clusterToNumberOfTweets[predicted_cluster]+=1
@@ -59,9 +65,9 @@ class TwitterListener(StreamListener):
         self.count+=1
 
         #EXIT STREAMING TO CREATE BAR GRAPH
-        if self.count==30:
+        if self.count==70:
             self._prettyPrintClusterToTweets()
-            createBarGraph(self.n_cluster,self.clusterToNumberOfTweets)
+            createBarGraph(self.topic, self.model_name, self.n_cluster,self.clusterToNumberOfTweets)
             return False
 
     def on_error(self, status_code):
@@ -82,11 +88,14 @@ class TwitterListener(StreamListener):
         else:
             print("Refer Best Practises guide at https://developer.twitter.com/en/docs/tweets/filter-realtime/guides/connecting"); 
             return False; 
-            
+    
 
 if __name__ == '__main__' :
     topic=int(input("Which topic (1 for brexit / 2 for corona)?: "))
-    filename = "5_cluster_kmeans_corona_2d.pkl"
-    _track = getStreamingTrackFromTopic(topic)
-    twitterStream = Stream(auth, TwitterListener(filename))
+    if Topic(topic)==Topic.BREXIT:
+        _track = STREAMING_TRACK_BREXIT
+    elif Topic(topic)==Topic.CORONA:
+        _track = STREAMING_TRACK_CORONA
+
+    twitterStream = Stream(auth, TwitterListener(topic))
     twitterStream.filter(languages=["en"], track=_track)

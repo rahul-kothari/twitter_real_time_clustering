@@ -3,21 +3,28 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 from mpl_toolkits.mplot3d import Axes3D
-
+import matplotlib.image as mpimg
 from config import *
 from data_cleanup import remove_stopwords_and_tfidf
 
-def saveData(topic, num_dimensions, file_name):
+def saveData():
     """
-    Saves X( cleaned data), vectorizer, pca (IN THAT ORDER) for a topic for a number of dimensions to data folder. So you don't have to keep computing it.    
+    For each topic and dimension combo, get X( cleaned data), vectorizer, pca (IN THAT ORDER)
+    and save them to data folder. So you don't have to keep computing it.    
     """
-    
-    X, vectorizer = getCleanedData(topic)
-    X, pca = reduceDimensionality(X, num_dimensions)
-
-    with open(file_name, 'wb') as f:
-            pickle.dump([X, vectorizer, pca], f)
-    print("data saved to ./",file_name)
+    filenames = ["data/brexit_cleaned_2d", "data/brexit_cleaned_3d", 
+            "data/corona_cleaned_2d", "data/corona_cleaned_2d"]
+    i=0
+    topics = [1,2]
+    dimensions = [2,3]
+    for topic in topics:
+        for num_dimension in dimensions:
+            X, vectorizer = getCleanedData(topic)
+            X, pca = reduceDimensionality(X, num_dimensions)
+            with open(filenames[i], 'wb') as f:
+                    pickle.dump([X, vectorizer, pca], f)
+            print("data saved to ./",file_name)
+            i+=1
 
 def reduceDimensionality(X, num_dimensions):
     # X is a sparse matrix. Need dense matrix for PCA.
@@ -30,9 +37,7 @@ def reduceDimensionality(X, num_dimensions):
 
 def getCleanedData(topic):
     """
-    Gets all tweets from corresponding file. 
-    Removes stopwords
-    Does TFIDF.
+    Gets all tweets from corresponding file. Removes stopwords. Does TFIDF.
     Paramters:
         topic:  int (1-brexit. 2-corona)
     Returns:
@@ -40,7 +45,7 @@ def getCleanedData(topic):
     """
     topic=Topic(topic)
     if topic==Topic.BREXIT:
-        filename = FILE_PATH
+        filename = FILE_PATH_BREXIT
     elif topic==Topic.CORONA:
         filename = FILE_PATH_CORONA
 
@@ -67,32 +72,14 @@ def loadCleanedReducedDimensionalityData(topic, num_dimensions):
         file_name = "data/brexit_cleaned_2d"
     elif  topic==Topic.BREXIT and num_dimensions==3:
         file_name = "data/brexit_cleaned_3d"
-    if  topic==Topic.CORONA and num_dimensions==2:
+    elif  topic==Topic.CORONA and num_dimensions==2:
         file_name = "data/corona_cleaned_2d"
-    if  topic==Topic.CORONA and num_dimensions==3:
+    elif  topic==Topic.CORONA and num_dimensions==3:
         file_name = "data/corona_cleaned_3d"
 
     X, vectorizer, pca = pickle.load(open(file_name, 'rb'))
 
     return X, vectorizer, pca
-    
-def visualizeTrainedModel(X, labels, num_cluster, num_dimensions):
-    if num_dimensions == 3:
-        colors = ['violet', 'red', 'blue', 'green', 'purple', 'orange', 'black', 'yellow']
-        fig = plt.figure()
-        ax = Axes3D(fig)
-        for i in range(0,num_cluster):
-            clusterName = "Cluster" + str(i+1)
-            ax.scatter(X[labels==i, 0], X[labels==i, 1], X[labels==i, 2], s=50, marker='o', color=colors[i], label=clusterName)
-        ax.legend()
-        plt.show()
-    elif num_dimensions == 2:
-        classes = ["Cluster "+str(i) for i in range(1, num_cluster+1)]
-        scatter = plt.scatter(X[:,0], X[:,1],c = labels, cmap ='rainbow') 
-        plt.legend(handles=scatter.legend_elements()[0], labels=classes)
-        plt.show()
-    else: 
-        raise Exception("NOT YET IMPLEMENTED")
 
 def writeModelToFile(vectorizer, pca, model, file_name):
     """
@@ -106,13 +93,51 @@ def writeModelToFile(vectorizer, pca, model, file_name):
                 pickle.dump([vectorizer, model], f)
     print("model saved to ./",file_name)
   
-############################ FOR STEP 3 ########################
-def getStoredModel(filename):
+
+###################### KMEANS HELPERS #############################
+def getClusterFeatures(km, n_cluster, vectorizer, isDimensionalityReduced, pca):
+    """
+    Get cluster centroids feature names
+    """
+    if isDimensionalityReduced:
+        original_space_centroids = pca.inverse_transform(km.cluster_centers_)
+        order_centroids = original_space_centroids.argsort()[:, ::-1]
+    else:
+        order_centroids = km.cluster_centers_.argsort()[:, ::-1]
+
+    terms = vectorizer.get_feature_names()
+    for i in range(n_cluster):
+        print("Cluster %d:" % (i+1), end='')
+        for ind in order_centroids[i, :10]:
+            print(' %s' % terms[ind], end='')
+        print()
+
+###################### utitlity across models ###################
+def visualizeTrainedModel(X, labels, num_cluster, num_dimensions, title):
+    """Get 2d/3d graph of model"""
+    if num_dimensions == 3:
+        colors = ['violet', 'red', 'blue', 'darkgreen', 'purple', 'orange', 'gold', 'brown', 'magenta', 'dodgerblue', 'olive']
+        fig = plt.figure()
+        ax = Axes3D(fig)
+        for i in range(0,num_cluster):
+            clusterName = "Cluster" + str(i+1)
+            ax.scatter(X[labels==i, 0], X[labels==i, 1], X[labels==i, 2], s=40, marker='o', color=colors[i], label=clusterName)
+        ax.legend()
+    elif num_dimensions == 2:
+        classes = ["Cluster "+str(i) for i in range(1, num_cluster+1)]
+        scatter = plt.scatter(X[:,0], X[:,1],c = labels, cmap ='rainbow') 
+        plt.legend(handles=scatter.legend_elements()[0], labels=classes)
+    plt.title(title)
+    plt.show()
+
+############################ FOR STEP 4 ########################
+def getStoredModel(filename, isDimensionalityReduced):
     """
     Finds the file where the ai model for this topic is stored. 
     Then retrieves the vectorizer, model and the number of clusters (for Kmeans)
     Paramters:
-        filename:  
+        filename:
+        isDimnesionalityReduced (was pca done?)  
     Returns:
         vectorizer: 
         pca
@@ -120,144 +145,67 @@ def getStoredModel(filename):
         n_cluster: intn(for kmeans)
 
     """
-
-    # topic = Topic(topic)
-    # if topic==Topic.BREXIT:
-    #     stored_model = STORED_MODEL
-    # elif topic==Topic.CORONA:
-    #     stored_model = STORED_MODEL_CORONA
-
     n_cluster = int(filename.split("_")[0])
-    vectorizer, pca, model = pickle.load(open(filename, 'rb'))
-
+    pca = None
+    if isDimensionalityReduced:
+        vectorizer, pca, model = pickle.load(open(filename, 'rb'))
+    else:
+        vectorizer, model = pickle.load(open(filename, 'rb'))
     return vectorizer, pca, model, n_cluster
 
-def getStreamingTrackFromTopic(topic):
-    """
-    Based on topic, suggests the keywords to look out for while streaming tweets.
-    Parameter:
-        topic:  int (1-brexit. 2-corona)
-    Returns:
-        _track: 
-    """
+def getFinalModelForStreaming(topic):
+    """Get the filename (of the final model) and Track for streaming
+    :params:
+        topic = int (1 for brexit...)"""
     topic = Topic(topic)
-    if topic==Topic.BREXIT:
-        _track=["brexit"]
-    elif topic==Topic.CORONA:
-        _track=["corona virus", "corona", "coronavirus"]
-    return _track
+    if topic == Topic.BREXIT:
+        filename = STORED_MODEL_BREXIT
+    elif topic == Topic.CORONA:
+        filename = STORED_MODEL_CORONA
+    isDimensionalityReduced = False   
+    vec, pca, model, num_cluster = getStoredModel(filename, isDimensionalityReduced)
+    return filename, vec, pca, model, num_cluster
 
-def createBarGraph(num_cluster, tweetsPerCluster):
+def createBarGraph(topic, model_name, num_cluster, tweetsPerCluster):
     """
     Draws a histogram of number of tweets per cluster.
     
     :parameters:
+        topic = int (1/2)
+        model_name = e.g. "KMeans - allD"
         num_cluster : int - number of clusters in the AI model
         tweetsPerCluster: dictionary - 
             keys = cluster number. 
             value = #tweets classified to be in that cluster.
     """
-    my_colors = ['brown','pink', 'red', 'green', 'blue', 'cyan','orange','purple']
-    x=[] 
-    y=[]
-    for i in range(1, num_cluster+1):
-        x.append(i)
-        y.append(tweetsPerCluster[i])
-
-    fig = plt.figure(figsize=(8, 6))
-    fig.subplots_adjust(hspace=.35, bottom=.02)
-    ax = fig.add_subplot(2, 1, 1)
-    bars = ax.bar(x, y, align='center', color = my_colors, edgecolor='k', linewidth=2)
-    ax.xticks(x)
-    ax.ylabel('#tweets')
-    ax.title('#tweets per cluster')
-
-    ax = fig.add_subplot(2,1,2)
-    
-    plt.show()
-
-###### OLD METHODS ##########################
-def createBarGraphAnnotatedAllDKmeans(topic, n_cluster, tweetsPerCluster):
-    """
-    Creates a bar graph showing the number of tweets per cluster.
-    Paramters:
-        topic: int (1-brexit, 2-corona)
-        n_cluster: int - 
-            number of clusters in the ai model
-        tweetsPerCluser: dictionary
-            key=cluster number. Value = num of tweets in this cluster
-    """
-
-    feature_names = getModelCentroidsFeatureNames(topic,5)
-
-    x=[]; y=[];
-    for cluster in tweetsPerCluster.keys():
-        x.append(cluster)
-        y.append(tweetsPerCluster[cluster])
+    my_colors = ['brown','pink', 'red', 'limegreen', 'blue', 'cyan',
+                'orange', 'dodgerblue','purple', 'turquoise', 'darkorchid', 'gold']
+    x = []
+    y = []
+    for j in range(1, num_cluster+1):
+        y.append(tweetsPerCluster[j])
+        x.append(j)
 
     fig=plt.figure()
-    ax=plt.subplot()
+    fig.subplots_adjust(hspace = 0.5)
+    fig.suptitle("STREAMING RESULTS - %s" % Topic(topic).name, fontsize=16)
+    ax=plt.subplot(211)
 
-    bars = plt.bar(x, y, align='center', alpha=0.5, color='c', edgecolor='k', linewidth=2)
-    plt.xticks(x)
-    plt.ylabel('#tweets')
-    plt.title('#tweets per cluster')
+    bars = plt.bar(x, y, align='center', color = my_colors, edgecolor='k', linewidth=2)
+    for bar in bars:
+        yval = bar.get_height()
+        plt.text(bar.get_x(), yval + 1., str(int(yval)))
 
-    annot = ax.annotate("", xy=(0,0), xytext=(-20,20),textcoords="offset points",
-                    bbox=dict(boxstyle="round", fc="black", ec="b", lw=2),
-                    arrowprops=dict(arrowstyle="->"))
-    #TODO: Find correct values for (x,y) and xytext.
-    annot.set_visible(False)        
+    ax.set_xticks(x)
+    # ax.set_yticks(np.array(range(0,100,5)))
+    plt.title('#tweets per cluster: %s' % model_name)       
 
-    def update_annot(bar):    
-        x = bar.get_x()+bar.get_width()/2. #cluster number
-        y = bar.get_y()+bar.get_height()/2.
-        #.get_x / y -> what value of x,y does the rectangle start at.
-        # .get_widht/ height -> kitna mota/lamba it is..
-        annot.xy = (x,y) # where to place the annonated text.
-        #putting it at the center of the bar.
-        text = feature_names[int(x)]
-        annot.set_text(text)
-        annot.get_bbox_patch().set_alpha(0.4)
-
-    def hover(event):
-        vis = annot.get_visible()
-        if event.inaxes == ax:
-            for bar in bars:
-                cont, ind = bar.contains(event)
-                if cont:
-                    update_annot(bar)
-                    annot.set_visible(True)
-                    fig.canvas.draw_idle()
-                    return
-        if vis:
-            annot.set_visible(False)
-            fig.canvas.draw_idle()
-
-    fig.canvas.mpl_connect("motion_notify_event", hover)
+    ax = plt.subplot(212)
+    plt.title("Cluster Features for this KMeans Model")
+    if topic==1:
+        img1 = mpimg.imread('kmeans_brexit_cluster_features.png')
+    elif topic==2:
+        img1 = mpimg.imread('kmeans_corona_cluster_features.png')
+    plt.imshow(img1) 
+    ax.set_axis_off()
     plt.show()
-    
-"""
-BESST SO FAR:
-Opinion Sinn Fein s election success is important but Boris Johnson is likely to be the architect of Irish unity https
-2
-Biased blundering and crude the BBC s Brexit Day coverage proved to me it needs reform No The BBC doesn t need Reform it
-2
-He is part of the metropolitan leftie elite He was also complicit in the betrayal of millions of Northern Labour lea
-5
-The Tories are launching a million taxpayer funded ad campaign to promote the Union And someone s leaked the cinema ad to
-5
-Matteo Salvini has warned European Commission President Ursula von der Leyen Italy could be the next country to quit t
-2
-It was because of Blair and his legacy that we have Brexit Johnson and Corbyn By the end New Labour wasn t offering        
-5
-So much for saving our green and pleasant land People have been jailed for less of late
-7
-Brexit going ahead and Trump is going to be president for four more years Nae luck ya wee baldy reptilian slimey cunt Deal 
-with it and shut the fuck up you retard
-2
-I fought for Brexit on social media and I ll fight to get Khan out of London on social media It s my capital cit
-2
-Concerned food importers have revealed the mountain of paperwork they face under Boris Johnson s hard Brexit making pric   
-2
-"""
