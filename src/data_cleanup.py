@@ -5,13 +5,11 @@ from config import STOPWORDS
 
 def remove_urls_users_punctuations(full_text):
     """ Create the game, SpaceInvaders. Train or test it.
-    Parameters
-    ------------
-    full_text : string
-        a raw tweet
-    Returns
-    -----------
-    string - removing punctuations, urls, user mentions, RT
+    Args: 
+    full_text : string - a raw tweet
+
+    Returns:
+    string - removing punctuations, urls, user mentions, RT, numbers
     """
     """    
     1. Use regex to remove all user mentions, URLs, RT
@@ -35,9 +33,12 @@ def remove_urls_users_punctuations(full_text):
 def remove_stopwords_and_tfidf(proecessed_tweets):
     """
     Removes stopwords and assigns importance based on TF-IDF
-    :param proecessed_tweets: list of tweets are removing punctuations, urls etc.
-    :return: _data - removing stop words, and doing tfidf
-            _vectorizer - TFIDF Vectorizer Object
+    Args:
+        proecessed_tweets: list of tweets are removing punctuations, urls etc.
+    
+    Returns:
+        _data - removing stop words, and doing tfidf
+        _vectorizer - SKLEARN.TFIDF Vectorizer Object
     """
     # remove words with numbers.
     proecessed_tweets = [ re.sub(r'\w*\d\w*', '', tweet).strip() for tweet in proecessed_tweets]
@@ -45,13 +46,3 @@ def remove_stopwords_and_tfidf(proecessed_tweets):
     _vectorizer = TfidfVectorizer(stop_words=STOPWORDS)  # pass my own list of stopwords
     _data = _vectorizer.fit_transform(proecessed_tweets)
     return _data, _vectorizer
-
-
-# def remove_stopwords(data):
-# [word for word in data if word.lower() not in STOPWORDS]
-# OR
-#     removed_stopwords = list()
-#     for word in removed_punctuations:
-#         if word.lower() not in STOPWORDS:
-#             removed_stopwords.append(word)
-#     print(removed_stopwords)

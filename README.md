@@ -1,12 +1,31 @@
 # Real-time Collective Event Stream Detection from Twitter Streams
+create venv:
+.\venv\Scripts\activate
+.\venv\Scripts\deactivate
 
-The purpose of this project is to implement machine leaning techniques to detect groups of events (known as collective anomaly) from streaming twitter data in real-time. The events can be design as form of unusual behaviour or inappropriate tweets (e.g., terror, sexual abuse words…etc.).
 
-## STEPS
-1. Collect Data - Scrape twitter (use Cursor(api.search q=...))
-2. Extract keywords per tweet - TF-IDF
-3. Unsupervised Learning
-4. Labelling (for supervised learning later on)
-5. Supervised Learning - learn on it!
-6. Real Time Classification
-7. Present results in graphs?
+
+step 1 - frequent pausing to not abuse rate limits. hence only 5000 at a time.
+recommended to use trracks with AN OR rather than just geneeral track!
+
+
+utility script to save data
+HIGHLY RECOMMEND LOADING IT IN UTILS/LOADCLEANED...DATA
+
+in step 2 data = tf-idfed and removed stopword, urls, ....
+
+CONFIG.PY CONVENTION
+
+
+FILENAME CONVENTION
+
+Store .pkl file in this order: vec, pca, model, n_cluster. Even if pca not done, store NONE.
+
+
+### FUTURE STUFF
+* Try cosine distances
+* try other dimension reduction methods / kitne dimensions
+* try miniBatch
+* phrases like boris and johnson should be treated as one.
+* remove things like "bbc", "via" etc....
+* try optics instead of dbscan

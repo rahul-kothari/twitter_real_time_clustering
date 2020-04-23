@@ -1,10 +1,8 @@
-# https://scikit-learn.org/stable/modules/clustering.html#birch
-# https://towardsdatascience.com/machine-learning-birch-clustering-algorithm-clearly-explained-fb9838cbeed9
-
 import numpy as np
 from sklearn.cluster import Birch
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+
 from utils import loadCleanedReducedDimensionalityData, writeModelToFile, visualizeTrainedModel
 from config import Topic
 
@@ -65,6 +63,6 @@ visualizeTrainedModel(X, labels, num_cluster, num_dimensions,
                     "BIRCH Clustering %s - %d Dimensions, brfac = %d, threshold=%.2f" 
                         % (topicName, num_dimensions, brfac, threshold))
 file_name = input("Enter filename to store data in [WITHOUT .pkl extension]: ")+".pkl"
-writeModelToFile(vectorizer, pca, model, file_name)
+writeModelToFile(vectorizer, pca, model, num_cluster, file_name)
 
 

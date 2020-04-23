@@ -8,10 +8,42 @@ import numpy as np
 
 from config import *
 from data_cleanup import remove_urls_users_punctuations
-from model import Model
-# OAuth process
-auth = OAuthHandler(CONSUMER_KEY, CONSUMER_API_SECRET)
-auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+from utils import getStoredModel
+
+"""
+UTILITY SCRIPT
+COMPARE HOW SEVERAL DIFFERENT MODELS DO IN STREAMING
+Within TwitterListener:
+1. JUST ADD THE FILENAME in _getMOdels() -> files
+2. And update the subplots in createAllGraphs
+"""
+
+
+class Model:    
+    def __init__(self, filename):
+        self.name = filename
+        self.vectorizer, self.pca, self.model, self.n_cluster = getStoredModel(filename)
+        self._initializeDictionary()
+
+    def _initializeDictionary(self):
+        """Create 2 dictionaries:
+        clusterToTweetsText -> the tweets in each cluster (makes it easy for analysis)
+        clusterToNumberOfTweets -> how many tweets classified in this cluster
+        (to plot graph)
+        """
+        self.clusterToTweetsText = dict()
+        self.clusterToNumberOfTweets = dict()
+        for cluster in range(1, self.n_cluster+1):
+            self.clusterToNumberOfTweets[cluster]=0
+            self.clusterToTweetsText[cluster]=list()
+    
+    def prettyPrintClusterToTweets(self):
+        print(self.name)
+        for cluster in self.clusterToTweetsText.keys():
+            print(cluster, ' :')
+            for tweet in self.clusterToTweetsText[cluster]:
+                print('\t', tweet)
+            print()
 
 # listener that handles streaming data
 class TwitterListener(StreamListener):
@@ -22,7 +54,9 @@ class TwitterListener(StreamListener):
         self._getModels()
 
     def _getModels(self):
-        # files = ["9_cluster_kmeans_brexit_allD.pkl", "7_cluster_gmm_brexit_2d.pkl"]
+        """
+        Store all the models we want to compare:
+        """
         
         files = ["9_cluster_kmeans_corona_allD.pkl", "5_cluster_gmm_corona_2d.pkl"]
 
@@ -50,7 +84,6 @@ class TwitterListener(StreamListener):
                 X = X.todense()
                 X = AI.pca.transform(X)
             predicted_cluster = int(AI.model.predict(X))+1  
-            # print(AI.name + " -> " + str(predicted_cluster))
             AI.clusterToNumberOfTweets[predicted_cluster]+=1
             AI.clusterToTweetsText[predicted_cluster].append(cleaned_text)
         self.count+=1
@@ -65,6 +98,10 @@ class TwitterListener(StreamListener):
         return False
 
     def createAllGraphs(self):
+        """
+        PLOT SUBPLOTS COMPARING EACH MODEL
+        CHANGE ax.fig_add_subplot accordingly
+        """
         fig = plt.figure()
         fig.subplots_adjust(hspace=0.8, wspace = 0.5)
         fig.suptitle("CORONA REAL TIME CLASSIFICATION - Comparing models:", fontsize=16)
@@ -95,9 +132,8 @@ class TwitterListener(StreamListener):
 if __name__ == '__main__' :
     # _track = ["coronavirus nhs", "coronavirus economy", "coronavirus wuhan", "coronavirus usa", "coronavirus trump"]
     topic=Topic(int(input("Which topic (1 for brexit / 2 for corona)?: ")))
-    if topic==Topic.BREXIT:
-        _track = STREAMING_TRACK_BREXIT
-    elif topic==Topic.CORONA:
-        _track = STREAMING_TRACK_CORONA 
+    _track = STREAMING_TRACK[topic.name]    # OAuth process
+    auth = OAuthHandler(CONSUMER_KEY, CONSUMER_API_SECRET)
+    auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
     twitterStream = Stream(auth, TwitterListener())
     twitterStream.filter(languages=["en"], track=_track)

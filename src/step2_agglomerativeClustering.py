@@ -3,10 +3,15 @@ from sklearn.cluster import AgglomerativeClustering
 from sklearn.metrics import silhouette_score
 import scipy.cluster.hierarchy as shc
 import numpy as np
+
 from utils import *
-import itertools
+from config import Topic
 
 def createDendogram(X):
+    """Another way to find the best number of clusters for agglomerative
+    However can only experiment with 1 linkage type at a time
+    So NOT USED HERE!
+    """
     # Create Dendogram
     plt.title('Visualising the data') 
     Dendrogram = shc.dendrogram((shc.linkage(X, method ='ward'))) 
@@ -14,24 +19,13 @@ def createDendogram(X):
 
 topic = int(input("Enter a topic [1 for brexit / 2 for corona]: "))
 topicName = Topic(topic).name
-num_dimensions = input("How many dimensions should the dataset be? [2/3/ full]: ")
-
-if not num_dimensions == "full":
-    num_dimensions = int(num_dimensions)
-    isDimensionalityReduced = True
-    X, vectorizer, pca = loadCleanedReducedDimensionalityData(topic, num_dimensions)
-else:
-    num_dimensions = None
-    isDimensionalityReduced = False
-    X, vectorizer = getCleanedData(topic)
-    pca = None
-    X = X.todense()
-
-   
+num_dimensions = int(input("How many dimensions should the dataset be? [2/3]: "))
+X, vectorizer, pca = loadCleanedReducedDimensionalityData(topic, num_dimensions)
 # X, vectorizer = getCleanedData(topic)
 # X, pca = reduceDimensionality(X, num_dimensions)
 
-# Experiemnt with various linkage types and num clusters
+# Experiemnt with various linkage types and num clusters to find the best parameters
+# Choose model with best silhouette score
 best_model = None
 best_linkage_type = None
 max_silhoutte_score = -np.infty
@@ -54,15 +48,15 @@ for linkage_type in linkage_types:
 silhouette_scores = np.array(silhouette_scores)
 bars = []
 
-color_iter = itertools.cycle(['navy', 'turquoise', 'cornflowerblue',
-                              'darkorange'])
+colors = ['navy', 'turquoise', 'cornflowerblue','darkorange']
 fig = plt.figure(figsize=(8, 6))
 fig.subplots_adjust(hspace=.35, bottom=.02)
 
 fig.suptitle("Topic %s %d Dimensions" % (topicName, num_dimensions), fontsize=14)
 ax = fig.add_subplot(2,1,1)
 
-for i, (link_type, color) in enumerate(zip(linkage_types,color_iter)):
+for i, link_type in enumerate(linkage_types):
+    color = colors[i]
     xpos = np.array(num_cluster_range) + .2 * (i - 2)
     bars.append(plt.bar(xpos, silhouette_scores[i * len(num_cluster_range):
                                   (i + 1) * len(num_cluster_range)],
@@ -76,6 +70,7 @@ ax.legend([b[0] for b in bars], linkage_types)
 labels = best_model.labels_
 num_cluster = len(set(labels))
 
+# plot model visualization:
 if num_dimensions == 3:
     colors = ['violet', 'red', 'blue', 'green', 'purple', 'orange', 'black', 'yellow']
     ax = fig.add_subplot(2, 1, 2, projection='3d')
@@ -95,11 +90,4 @@ plt.show()
     
 
 file_name = input("Enter filename to store data in [WITHOUT .pkl extension]: ")+".pkl"
-writeModelToFile(vectorizer, pca, best_model, file_name)
-
-"""
-LINKS:
-https://www.geeksforgeeks.org/implementing-agglomerative-clustering-using-sklearn/
-
-https://towardsdatascience.com/machine-learning-algorithms-part-12-hierarchical-agglomerative-clustering-example-in-python-1e18e0075019
-"""
+writeModelToFile(vectorizer, pca, best_model, num_cluster, file_name)

@@ -4,29 +4,37 @@ import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.image as mpimg
+
 from config import *
 from data_cleanup import remove_stopwords_and_tfidf
 
-def saveData():
+def getCleanedData(topic):
     """
-    For each topic and dimension combo, get X( cleaned data), vectorizer, pca (IN THAT ORDER)
-    and save them to data folder. So you don't have to keep computing it.    
+    Gets all tweets from corresponding file. Removes stopwords. Does TFIDF.
+    Args:
+        topic:  int (1-brexit. 2-corona)
+    Returns:
+        X, vectorizer:   
     """
-    filenames = ["data/brexit_cleaned_2d", "data/brexit_cleaned_3d", 
-            "data/corona_cleaned_2d", "data/corona_cleaned_2d"]
-    i=0
-    topics = [1,2]
-    dimensions = [2,3]
-    for topic in topics:
-        for num_dimension in dimensions:
-            X, vectorizer = getCleanedData(topic)
-            X, pca = reduceDimensionality(X, num_dimensions)
-            with open(filenames[i], 'wb') as f:
-                    pickle.dump([X, vectorizer, pca], f)
-            print("data saved to ./",file_name)
-            i+=1
+    topic=Topic(topic).name
+    filename = DATA_FILE[topic]
+
+    tweets = [line.rstrip('\n').lower() for line in open(filename)]
+    # 2. remove stopwords, do tfidf
+    X, vectorizer = remove_stopwords_and_tfidf(tweets)
+    print('done cleaning data')
+    return X, vectorizer
 
 def reduceDimensionality(X, num_dimensions):
+    """
+    Do PCA to reduce dimensions of dataset
+    Args:
+        X - dataset after TF-IDF vectorization
+        num_dimensions - to reduce to
+    Returns:
+        X - Matrix reduced in dimensions
+        pca - pca object fitted for this
+    """
     # X is a sparse matrix. Need dense matrix for PCA.
     # If X too large use - Z=linkage(X.todense(),distance='cosine')
     X = X.todense()
@@ -35,35 +43,15 @@ def reduceDimensionality(X, num_dimensions):
     print("done reducing dimension of data to ", num_dimensions, " dimensions")
     return X, pca
 
-def getCleanedData(topic):
-    """
-    Gets all tweets from corresponding file. Removes stopwords. Does TFIDF.
-    Paramters:
-        topic:  int (1-brexit. 2-corona)
-    Returns:
-        X, vectorizer:   
-    """
-    topic=Topic(topic)
-    if topic==Topic.BREXIT:
-        filename = FILE_PATH_BREXIT
-    elif topic==Topic.CORONA:
-        filename = FILE_PATH_CORONA
-
-    tweets = [line.rstrip('\n').lower() for line in open(filename)]
-    # 2. remove stopwords, do tfidf
-    X, vectorizer = remove_stopwords_and_tfidf(tweets)
-    print('done cleaning data')
-    return X, vectorizer
-
 def loadCleanedReducedDimensionalityData(topic, num_dimensions):
     """
     Load the cleaned and reduced dimensinality data.
 
-    :parameters:
+    Args:
         topic - int (1/2)
         num_dimensions - 2d or 3d model
     
-    :returns:
+    Returns:
         X, vectorizer, pca
     """
 
@@ -81,17 +69,20 @@ def loadCleanedReducedDimensionalityData(topic, num_dimensions):
 
     return X, vectorizer, pca
 
-def writeModelToFile(vectorizer, pca, model, file_name):
+def writeModelToFile(vectorizer, pca, model, num_cluster, file_name):
     """
     Write ai model and its vectorizer to filename.
-    """    
-    if not pca==None:
-        with open(file_name, 'wb') as f:
-                pickle.dump([vectorizer, pca, model], f)
-    else:
-        with open(file_name, 'wb') as f:
-                pickle.dump([vectorizer, model], f)
-    print("model saved to ./",file_name)
+
+    Args:
+        vectorizer - tfidf fitted for this model
+        pca - pca fitted for the model. None if not used
+        model - AI model
+        num_cluster - in this model
+        filename - where to store the objects.
+    """ 
+    with open(file_name, 'wb') as f:
+            pickle.dump([vectorizer, pca, model, num_cluster], f)
+    print("details saved to ./",file_name)
   
 
 ###################### KMEANS HELPERS #############################
@@ -114,7 +105,12 @@ def getClusterFeatures(km, n_cluster, vectorizer, isDimensionalityReduced, pca):
 
 ###################### utitlity across models ###################
 def visualizeTrainedModel(X, labels, num_cluster, num_dimensions, title):
-    """Get 2d/3d graph of model"""
+    """Get 2d/3d graph of model
+    Args:
+        X - data after performing TF-IDF and pca 
+        labels - model.labels or model.predict(X)
+        title - title of the graph
+    """
     if num_dimensions == 3:
         colors = ['violet', 'red', 'blue', 'darkgreen', 'purple', 'orange', 'gold', 'brown', 'magenta', 'dodgerblue', 'olive']
         fig = plt.figure()
@@ -131,39 +127,33 @@ def visualizeTrainedModel(X, labels, num_cluster, num_dimensions, title):
     plt.show()
 
 ############################ FOR STEP 4 ########################
-def getStoredModel(filename, isDimensionalityReduced):
+def getStoredModel(filename):
     """
-    Finds the file where the ai model for this topic is stored. 
-    Then retrieves the vectorizer, model and the number of clusters (for Kmeans)
-    Paramters:
-        filename:
-        isDimnesionalityReduced (was pca done?)  
-    Returns:
-        vectorizer: 
-        pca
-        model: ai model
-        n_cluster: intn(for kmeans)
+    Give the .pkl file location to retrieves the vectorizer, model and the number of clusters (for Kmeans)
+    
+    Args:
+        filename: where is the .pkl file store
 
+    Returns:
+        vectorizer: tfidf vectorier object stored for this.
+        pca: None if not done
+        model: ai model
+        num_cluster: int 
     """
-    n_cluster = int(filename.split("_")[0])
-    pca = None
-    if isDimensionalityReduced:
-        vectorizer, pca, model = pickle.load(open(filename, 'rb'))
-    else:
-        vectorizer, model = pickle.load(open(filename, 'rb'))
-    return vectorizer, pca, model, n_cluster
+    vectorizer, pca, model, num_cluster = pickle.load(open(filename, 'rb'))
+    return vectorizer, pca, model, num_cluster
 
 def getFinalModelForStreaming(topic):
-    """Get the filename (of the final model) and Track for streaming
-    :params:
-        topic = int (1 for brexit...)"""
-    topic = Topic(topic)
-    if topic == Topic.BREXIT:
-        filename = STORED_MODEL_BREXIT
-    elif topic == Topic.CORONA:
-        filename = STORED_MODEL_CORONA
-    isDimensionalityReduced = False   
-    vec, pca, model, num_cluster = getStoredModel(filename, isDimensionalityReduced)
+    """Get the details of the final model for streaming. 
+    Args:
+        topic = int (1 for brexit...)
+
+    :returns:
+        filename, vectorizer, pca, model, num_cluster    
+    """
+    topic = Topic(topic).name
+    filename = FINAL_MODEL[topic]  
+    vec, pca, model, num_cluster = getStoredModel(filename)
     return filename, vec, pca, model, num_cluster
 
 def createBarGraph(topic, model_name, num_cluster, tweetsPerCluster):
@@ -200,6 +190,8 @@ def createBarGraph(topic, model_name, num_cluster, tweetsPerCluster):
     # ax.set_yticks(np.array(range(0,100,5)))
     plt.title('#tweets per cluster: %s' % model_name)       
 
+    # IF THIS THE FINAL MODEL WAS A 2D OR 3D GRAPH, REPLACE THIS WITH MODEL VISUALIZATION
+    # OR ANYTHING ELSE MEANINGFUL
     ax = plt.subplot(212)
     plt.title("Cluster Features for this KMeans Model")
     if topic==1:

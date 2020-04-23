@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 from config import * 
 from data_cleanup import remove_urls_users_punctuations
-from utils import getStoredModel, createBarGraph, getFinalModelForStreaming
+from utils import createBarGraph, getFinalModelForStreaming
 
 # OAuth process
 auth = OAuthHandler(CONSUMER_KEY, CONSUMER_API_SECRET)
@@ -16,21 +16,25 @@ auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 # listener that handles streaming data
 class TwitterListener(StreamListener):
 
-    def __init__(self, topic):
+    def __init__(self, topic, numOfTweets):
         """topic of the model"""
         self.topic = topic
         self.topicName = Topic(topic).name
-        filename,self.vectorizer, self.pca, self.model, self.n_cluster = getFinalModelForStreaming(topic)
-        split = filename.split("_")
-        self.model_name = split[2] + " - " + split[-1][:-4]
-        self.isDimensionalityReduced = False
-        self.clusterToTweetsText = dict()
-        self.clusterToNumberOfTweets = dict()
+        self.model_name,self.vectorizer, self.pca, self.model, self.n_cluster = getFinalModelForStreaming(topic)
         self._initializeDictionary()
         self.sleep_time = 60 #in seconds 
         self.count=0
+        self.NUM_OF_TWEETS_REQUIRED = numOfTweets
 
     def _initializeDictionary(self):
+        """Create 2 dictionaries:
+        clusterToTweetsText -> the tweets in each cluster (makes it easy for analysis)
+        clusterToNumberOfTweets -> how many tweets classified in this cluster
+        (to plot graph)
+        """
+        self.clusterToTweetsText = dict()
+        self.clusterToNumberOfTweets = dict()
+        
         for cluster in range(1, self.n_cluster+1):
             self.clusterToNumberOfTweets[cluster]=0
             self.clusterToTweetsText[cluster]=list()
@@ -47,15 +51,17 @@ class TwitterListener(StreamListener):
     
     def on_data(self, data): 
         tweet = json.loads(data)
+        #  handle extended tweets too.
         if(tweet["truncated"]):
             text = tweet["extended_tweet"]["full_text"]
         else:
             text = tweet["text"]
             
+        #  clean text - removeu urls etc. tfidf vectorization, pca if necessary
         cleaned_text = remove_urls_users_punctuations(text)
         print(cleaned_text)
         X = self.vectorizer.transform([cleaned_text]) 
-        if self.isDimensionalityReduced:
+        if not self.pca == None:
             X = X.todense()
             X = self.pca.transform(X)
         predicted_cluster = int(self.model.predict(X))+1  
@@ -65,7 +71,7 @@ class TwitterListener(StreamListener):
         self.count+=1
 
         #EXIT STREAMING TO CREATE BAR GRAPH
-        if self.count==70:
+        if self.count==self.NUM_OF_TWEETS_REQUIRED:
             self._prettyPrintClusterToTweets()
             createBarGraph(self.topic, self.model_name, self.n_cluster,self.clusterToNumberOfTweets)
             return False
@@ -92,10 +98,7 @@ class TwitterListener(StreamListener):
 
 if __name__ == '__main__' :
     topic=int(input("Which topic (1 for brexit / 2 for corona)?: "))
-    if Topic(topic)==Topic.BREXIT:
-        _track = STREAMING_TRACK_BREXIT
-    elif Topic(topic)==Topic.CORONA:
-        _track = STREAMING_TRACK_CORONA
-
-    twitterStream = Stream(auth, TwitterListener(topic))
+    _track = STREAMING_TRACK[Topic(topic).name]
+    numberOfTweets = int(input("How many tweets to stream?: "))
+    twitterStream = Stream(auth, TwitterListener(topic, numberOfTweets))
     twitterStream.filter(languages=["en"], track=_track)

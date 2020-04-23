@@ -14,19 +14,19 @@ def create_twitter_object():
 	return api
 
 
-def get_tweets(num_of_tweets=NUM_OF_TWEETS_NEEDED, search_criteria=TOPIC2, lang="en", filename=FILE_PATH3):
+def get_tweets(search_criteria, filename, lang="en"):
 	"""
-	Get tweets using tweepy api.
-	:param num_of_tweets: (int) to be fetched from api
-	:param search_criteria: topic, hashtags, keywords etc.
-	:param lang: language of tweets to fetch ("en" for english)
-	:return: list of cleaned tweets
+	Get upto 5000 tweets using tweepy api, remove URLS, user mentions, numbers and store in file.
+	Args:
+		search_criteria: topic, hashtags, keywords etc.
+		filename - string where tweets are stored
+		lang: language of tweets to fetch ("en" for english)
 	"""
 	api = create_twitter_object()
 	count = 0
 	all_tweets = list()
 	tweets=[]
-	for tweet in Cursor(api.search, q=search_criteria, lang=lang, tweet_mode='extended').items(num_of_tweets):
+	for tweet in Cursor(api.search, q=search_criteria, lang=lang, tweet_mode='extended').items(50000):
 		try: 			
 			count += 1
 			print(count, tweet.full_text)
@@ -45,13 +45,12 @@ def get_tweets(num_of_tweets=NUM_OF_TWEETS_NEEDED, search_criteria=TOPIC2, lang=
 
 if __name__ == '__main__' :
 	# get tweets and put it in a file
-	print("Writing tweets to"+ FILE_PATH_TRIAL)
 	print("Which topic to get tweets about?")
-	print("1. Brexit (TOPIC2 in config.py)")
-	print("2. Corona (TOPIC_CORONA in config.py)")
+	print("1. Brexit (refer MINING_TOPIC[BREXIT] in config.py)")
+	print("2. Corona (MINIG_TOPIC[CORONA] in config.py)")
+	print("Tweets are put in "+ DATA_FILE["TRIAL"])
 	topic=Topic(int(input("Which topic (1/2)?: ")))
+	topicName = topic.name
 	# raises ValueError automatically.
-	if(topic==Topic.BREXIT):
-		get_tweets(search_criteria=TOPIC_BREXIT_2)
-	elif(topic==Topic.CORONA):
-		get_tweets(search_criteria=TOPIC_CORONA)
+	get_tweets(search_criteria=MINING_TOPIC[topic.name], filename = DATA_FILE["TRIAL"])
+	
