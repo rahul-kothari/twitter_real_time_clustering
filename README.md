@@ -2,6 +2,8 @@
 
 The idea of this project was to get tweets related to a topic in real-time and use unsupervised learning techniques to cluster them into various sub-topics to analyse the popular domains with respect to the trend. There were 5 unsupervised learning models used that were trained on the tweets after doing pre-processing, TF-IDF and dimensionality reduction (where necessary). These AI models have to be evaluated too to choose the best one. This part is manual and left for the user to determine.
 
+![Corona Dataset Classified by K-Means](/graphs/corona_classifying_dataset_with_final_model.png)
+
 The AI algorithms were:
 * K-Means
 * Agglomerative Clustering
@@ -111,6 +113,9 @@ Each script does the following:
 **NOTE 3:** Certain files have other functionalities too. Like `kmeans.py` can show the circumference of the clusters formed. `agglomerative_clustering.py` can show the Dendrogram/Tree. `gmm.py` can show the ellipsis of the cluster.
 
 Check out the graphs folder to see what graphs these scripts produce!
+e.g.:
+
+![Model Visualization for KMEANS Corona 2D](/graphs/CORONA/kmeans_corona_2d_model.png)
 
 ## 2b. Evaluate best AI Model
 - Can use metrics like Silhouette score and BIC but they differ across models with different dimensions on the dataset.
@@ -120,6 +125,8 @@ Check out the graphs folder to see what graphs these scripts produce!
 2 utility scripts have also been added:
 - **utilityScript-classifyWholeDatasetWithModel.py** - this requires the .pkl file of the model and the topic number. It then classifies the whole dataset using the model.
 - **utilityScript-stream_multiple_models.py** - like step3, streams on twitter but plots sub-graphs showing how different AI models performed on the same tweets.
+
+![Compare models for streaming](/graphs/streaming_comapre_models_corona.png)
 
 ## 3. Streaming and Classifying Tweets live
 
@@ -137,6 +144,8 @@ What the script does?
 4. The tweets then are preprocessed (removing URLs, user mentions, punctuations, numbers etc.) followed by TF-IDF and dimensionality reduction if necessary.
 5. The tweets is fed to the final model. The `.pkl` file for the final model must be mentioned in the `src/config.py`'s `FINAL_MODEL` dictionary
 6. After the number of tweets (defined in point 2), a bar chart will be displayed showing what tweets belong to which clusters and the cluster features will be displayed as a subplot.
+
+![Streaming Corona real-time](/graphs/streaming_corona_with_final_model.png)
 
 ## Conventions and Contribution
 * Please maintain the convention in `config.py`	to add dictionary with the `KEY` as the topic name used in the `Topic` enum.
