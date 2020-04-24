@@ -13,13 +13,16 @@ All the above functionality already works for two trends: Brexit and Coronavirus
 
 * I have included the original dataset for Brexit and Coronavirus to help you get started and experiment. 
 
-* I also included the 18 models I created and experimented with. They are in the `other_models` folder
+* I also included the some of the models I created and experimented with. They are in the `models` folder
 
 * For both the trends, K-Means with no dimensionality reduction were the best models. The models are in the parent folder along with their cluster features.
 
 * In the graphs folder, you shall find graphs related to the 4 AI algorithms and graphs produced on streaming. These graphs will be constructed upon running the appropriate scripts.
 
 * As shown below, you need twitter auth tokens only for step 1 (mining) and step 3 (streaming). 
+
+**I would love to see how you use this! Add on your topics, your final models and streaming graphs!**
+
 
 ## Contents
 - [Setup](#setup)
@@ -122,14 +125,12 @@ Check out the graphs folder to see what graphs these scripts produce!
 
 [src/step3_event_catcher.py](src/step3_event_catcher.py)
 
-K-Means allDimension dataset (i.e. no dimension reduction) was best for both Corona and Brexit topics. 
-
-I have included the pickle files of these models in the parent directory for benefit of the user.
-
-Once the final model is evaluated, 
-
 You WILL need Twitter Auth tokens to stream.
 
+K-Means allDimension dataset (i.e. no dimension reduction) was best for both Corona and Brexit topics. I have included the pickle files of these models in the parent directory for benefit of the user.
+
+
+What the script does?
 1. Asks user input for tweet topic
 2. Asks user for how many tweets to stream. It is recommended to limit this to 30 for brexit (because there aren't that many tweets) and upto 150 for Corona.
 3. The filtering for tweets is controlled in `src/config.py`'s `STREAMING_TRACK` dictionary.

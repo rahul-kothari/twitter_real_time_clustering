@@ -123,7 +123,6 @@ dmypy.json
 
 # my stuff
 src/config.py
-/data/*.txt
-/data/*.pkl
+/graphs_original/*
 *.pkl
 /models/*
