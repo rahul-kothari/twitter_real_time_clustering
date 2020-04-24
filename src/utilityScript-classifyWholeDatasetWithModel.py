@@ -7,11 +7,11 @@ from utils import *
 
 # CHECK INPUTS....
 filename = "kmeans_brexit_allD_9_clusters.pkl"
-topic = 2
+topic = 1
 
-X, _ = getCleanedData(topic)
+# X, _ = getCleanedData(topic)
 vec, pca, model, num_cluster = getStoredModel(filename)
-labels = model.predict(X)
+labels = model.labels_
 tweetsPerCluster = [0] * num_cluster
 
 x = ["Cluster "+str(i) for i in range(1, num_cluster+1)]

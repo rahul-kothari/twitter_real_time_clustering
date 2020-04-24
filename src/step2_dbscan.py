@@ -27,13 +27,10 @@ def getBestEpsilon(topicName, num_dimensions, X, min_samples):
 topic = int(input("Enter a topic [1 for brexit / 2 for corona]: "))
 topicName = Topic(topic).name
 num_dimensions = input("How many dimensions should the dataset be? [2/3]: ")
-
-# if not num_dimensions == "full":
 num_dimensions = int(num_dimensions)
-isDimensionalityReduced = True
-X, vectorizer, pca = loadCleanedReducedDimensionalityData(topic, num_dimensions)
-# X, vectorizer = getCleanedData(topic)
-# X, pca = reduceDimensionality(X, num_dimensions)
+# X, vectorizer, pca = loadCleanedReducedDimensionalityData(topic, num_dimensions)
+X, vectorizer = getCleanedData(topic)
+X, pca = reduceDimensionality(X, num_dimensions)
 
 # min_samples = 2 * num_dimensions acc to  (Schubert, Sander et al, 2017
 min_samples = 2 * num_dimensions 
