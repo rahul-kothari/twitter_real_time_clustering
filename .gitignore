@@ -124,5 +124,3 @@ dmypy.json
 # my stuff
 src/config.py
 /graphs_original/*
-*.pkl
-/models/*
