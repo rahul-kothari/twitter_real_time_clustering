@@ -26,7 +26,7 @@ def get_tweets(search_criteria, filename, lang="en"):
 	count = 0
 	all_tweets = list()
 	tweets=[]
-	for tweet in Cursor(api.search, q=search_criteria, lang=lang, tweet_mode='extended').items(50000):
+	for tweet in Cursor(api.search, q=search_criteria, lang=lang, tweet_mode='extended').items(5000):
 		try: 			
 			count += 1
 			print(count, tweet.full_text)

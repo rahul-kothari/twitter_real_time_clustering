@@ -43,32 +43,6 @@ def reduceDimensionality(X, num_dimensions):
     print("done reducing dimension of data to ", num_dimensions, " dimensions")
     return X, pca
 
-def loadCleanedReducedDimensionalityData(topic, num_dimensions):
-    """
-    Load the cleaned and reduced dimensinality data.
-
-    Args:
-        topic - int (1/2)
-        num_dimensions - 2d or 3d model
-    
-    Returns:
-        X, vectorizer, pca
-    """
-
-    topic = Topic(topic)
-    if topic==Topic.BREXIT and num_dimensions==2:
-        file_name = "data/brexit_cleaned_2d"
-    elif  topic==Topic.BREXIT and num_dimensions==3:
-        file_name = "data/brexit_cleaned_3d"
-    elif  topic==Topic.CORONA and num_dimensions==2:
-        file_name = "data/corona_cleaned_2d"
-    elif  topic==Topic.CORONA and num_dimensions==3:
-        file_name = "data/corona_cleaned_3d"
-
-    X, vectorizer, pca = pickle.load(open(file_name, 'rb'))
-
-    return X, vectorizer, pca
-
 def writeModelToFile(vectorizer, pca, model, num_cluster, file_name):
     """
     Write ai model and its vectorizer to filename.

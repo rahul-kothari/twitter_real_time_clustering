@@ -5,7 +5,9 @@ from utils import *
 from config import Topic
 
 def doElbowMethod(X):
-    """Perrforms elbow method to estimate optimum number of clusters"""
+    """Perrforms elbow method to estimate optimum number of clusters
+    The graph has an elbow where the change in inertia is maximum.   
+    """
     Sum_of_squared_distances = []
     K=range(3,15)
     for k in K:
@@ -47,7 +49,7 @@ topic = int(input("Enter a topic [1 for brexit / 2 for corona]: "))
 num_dimensions = input("How many dimensions should the dataset be? [2/3/ full]: ")
 topicName = Topic(topic).name
 
-if not num_dimensions == "full":
+if num_dimensions == "full":
     num_dimensions = None
     isDimensionalityReduced = False
     X, vectorizer = getCleanedData(topic)
@@ -55,9 +57,9 @@ if not num_dimensions == "full":
 else:
     num_dimensions = int(num_dimensions)
     isDimensionalityReduced = True
-    X, vectorizer, pca = loadCleanedReducedDimensionalityData(topic, num_dimensions)
-    # X, vectorizer = getCleanedData(topic)
-    # X, pca = reduceDimensionality(X, num_dimensions)
+    # X, vectorizer, pca = loadCleanedReducedDimensionalityData(topic, num_dimensions)
+    X, vectorizer = getCleanedData(topic)
+    X, pca = reduceDimensionality(X, num_dimensions)
 
 doElbowMethod(X)
 

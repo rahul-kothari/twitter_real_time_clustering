@@ -20,9 +20,9 @@ def createDendogram(X):
 topic = int(input("Enter a topic [1 for brexit / 2 for corona]: "))
 topicName = Topic(topic).name
 num_dimensions = int(input("How many dimensions should the dataset be? [2/3]: "))
-X, vectorizer, pca = loadCleanedReducedDimensionalityData(topic, num_dimensions)
-# X, vectorizer = getCleanedData(topic)
-# X, pca = reduceDimensionality(X, num_dimensions)
+# X, vectorizer, pca = loadCleanedReducedDimensionalityData(topic, num_dimensions)
+X, vectorizer = getCleanedData(topic)
+X, pca = reduceDimensionality(X, num_dimensions)
 
 # Experiemnt with various linkage types and num clusters to find the best parameters
 # Choose model with best silhouette score
@@ -33,6 +33,8 @@ silhouette_scores = []
 linkage_types = ['ward', 'complete', 'average', 'single']
 num_cluster_range = range(3,11)
 
+# find the model combination (num_cluster and linkage type) 
+# with the hhighest silhouette score
 for linkage_type in linkage_types:
     for num_cluster in num_cluster_range:
         model = AgglomerativeClustering(n_clusters=num_cluster, linkage=linkage_type)
@@ -67,6 +69,7 @@ plt.title('Silhoutte Score per model')
 ax.set_xlabel('Number of clusters')
 ax.legend([b[0] for b in bars], linkage_types)
 
+# trained model is the one with highest silhouette score.
 labels = best_model.labels_
 num_cluster = len(set(labels))
 

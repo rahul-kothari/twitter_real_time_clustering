@@ -5,13 +5,16 @@ import matplotlib.image as mpimg
 from config import *
 from utils import *
 
-# CHECK INPUTS....
+"""
+UTILITY SCRIPT
+Simply change the filename and topic number
+"""
 filename = "kmeans_brexit_allD_9_clusters.pkl"
 topic = 1
 
 # X, _ = getCleanedData(topic)
 vec, pca, model, num_cluster = getStoredModel(filename)
-labels = model.labels_
+labels = model.labels_ # or model.predict(X)
 tweetsPerCluster = [0] * num_cluster
 
 x = ["Cluster "+str(i) for i in range(1, num_cluster+1)]

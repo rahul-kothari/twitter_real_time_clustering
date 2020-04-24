@@ -41,9 +41,9 @@ topic = int(input("Enter a topic [1 for brexit / 2 for corona]: "))
 topicName = Topic(topic).name
 num_dimensions = input("How many dimensions should the dataset be? [2/3]: ")
 num_dimensions = int(num_dimensions)
-X, vectorizer, pca = loadCleanedReducedDimensionalityData(topic, num_dimensions)
-# X, vectorizer = getCleanedData(topic)
-# X, pca = reduceDimensionality(X, num_dimensions)
+# X, vectorizer, pca = loadCleanedReducedDimensionalityData(topic, num_dimensions)
+X, vectorizer = getCleanedData(topic)
+X, pca = reduceDimensionality(X, num_dimensions)
 
 # To estimate covariance type and nu of components, 
 # plot BIC scores across a range. Choose one with lowest BIC score
@@ -74,17 +74,19 @@ plt.show()
 
 """ NOTE IF BIC SCORE goes on decreasing (like with brexit and corona datasts), 
 plot gradient of BIC of the covariance typ ewhihc is the lowest. (usually full)
-see where the gradient change reduces.
-Comment out the next 7 lines if this is not needed!
+see where the gradient change is not much 
+REFER: https://towardsdatascience.com/gaussian-mixture-model-clusterization-how-to-select-the-number-of-components-clusters-553bef45f6e4
 """
+drawGradient = input("For the covariance type with least BIC, was the bic decreasing with increase in number of clusters? [yes/no]:")
 # plot the gradient of BIC for this covariance type:
-cov_type = input("enter cov type:")
-i = cv_types.index(cov_type)
-plt.plot(n_components_range, np.gradient(bic[i*len_components:(i+1)*len_components]))
-plt.xlabel("Number of components")
-plt.ylabel("BIC Score gradient")
-plt.title("Gradient of BIC Scores across component ranges for %s covariance" % cov_type)
-plt.show()
+cov_type = input("enter covariance type (with consistently least BIC score):")
+if drawGradient == "yes":
+    i = cv_types.index(cov_type)
+    plt.plot(n_components_range, np.gradient(bic[i*len_components:(i+1)*len_components]))
+    plt.xlabel("Number of components")
+    plt.ylabel("BIC Score gradient")
+    plt.title("Gradient of BIC Scores across component ranges for %s covariance" % cov_type)
+    plt.show()
 
 #  TRAIN MODEL AND PLOT THE GRAPH! 
 n_components = int(input("Enter the number of components: "))

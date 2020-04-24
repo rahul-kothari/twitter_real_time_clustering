@@ -3,16 +3,16 @@ from sklearn.cluster import Birch
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-from utils import loadCleanedReducedDimensionalityData, writeModelToFile, visualizeTrainedModel
+from utils import *
 from config import Topic
 
 topic = int(input("Enter a topic [1 for brexit / 2 for corona]: "))
 topicName = Topic(topic).name
 num_dimensions = input("How many dimensions should the dataset be? [2/3]: ")
 num_dimensions = int(num_dimensions)
-X, vectorizer, pca = loadCleanedReducedDimensionalityData(topic, num_dimensions)
-# X, vectorizer = getCleanedData(topic)
-# X, pca = reduceDimensionality(X, num_dimensions)
+# X, vectorizer, pca = loadCleanedReducedDimensionalityData(topic, num_dimensions)
+X, vectorizer = getCleanedData(topic)
+X, pca = reduceDimensionality(X, num_dimensions)
 
 fig = plt.figure()
 fig.subplots_adjust(hspace=0.6, wspace=0.4)

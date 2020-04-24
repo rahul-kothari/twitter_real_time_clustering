@@ -111,6 +111,7 @@ class TwitterListener(StreamListener):
         for i in range(len(self.ai_algos)):
             AI = self.ai_algos[i]
             AI.prettyPrintClusterToTweets()
+            # CHANGE THIS IS NEED BE!
             ax = fig.add_subplot(1,2,(i+1))
             x = []
             y = []

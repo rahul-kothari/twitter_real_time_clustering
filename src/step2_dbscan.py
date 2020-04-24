@@ -11,7 +11,7 @@ from config import Topic
 def getBestEpsilon(topicName, num_dimensions, X, min_samples):
     """To find the right value of eps, Create K-Nearest Neighbour model.
     Get distances of the 2nd Nearest Ngbr. Sort and plot it. 
-    The knee is the best value of eps
+    The knee is the best value of eps i.e. from where distance increases suddenly!
     https://towardsdatascience.com/machine-learning-clustering-dbscan-determine-the-optimal-value-for-epsilon-eps-python-example-3100091cfbc
     """
     #optimal value of eps:
