@@ -1,6 +1,6 @@
-# Real-time Collective Event Stream Detection from Twitter Streams
+# Real-time Analysis of Tweets Using Unsupervised Learning
 
-The idea of this project was to get tweets related to a topic in real-time and use unsupervised learning techniques to cluster them into various sub-topics to analyse the popular domains with respect to the trend. There were 5 unsupervised learning models used that were trained on the tweets after doing pre-processing, TF-IDF and dimensionality reduction (where necessary). These AI models have to be evaluated too to choose the best one. This part is manual and left for the user to determine.
+The idea of this project was to get tweets related to a topic in real-time and use unsupervised learning techniques to cluster them into various sub-topics to analyse the popular domains with respect to the trend. There were 5 unsupervised learning models used that were trained on the tweets after doing pre-processing, TF-IDF and dimensionality reduction (where necessary). These AI models have to be evaluated too to choose the best one. And then the best one is used for classifying tweets in real time.
 
 ![Corona Dataset Classified by K-Means](/graphs/corona_classifying_dataset_with_final_model.png)
 
