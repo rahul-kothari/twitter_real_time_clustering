@@ -73,7 +73,8 @@ How the script works:
 - User inputs which topic (1 for Brexit / 2 for Coronavirus) to mine tweets on
 - The filtering of tweets can be controlled from `src/config.py`'s `MINING_TOPIC` dictionary
 - To understand more about how to filter for twitter refer [here](https://developer.twitter.com/en/docs/tweets/rules-and-filtering/guides/using-premium-operators)
-- Tweets are "cleaned" i.e. removal of URLS, user mentions, RT characters, numbers, emojis and punctuations. Refer `src/data_cleanup.py`'s `remove_urls_users_punctuations()` method
+- Tweets are passed through lemmatization.
+- Tweets are then "cleaned" i.e. removal of URLS, user mentions, RT characters, numbers, emojis and punctuations. Refer `src/data_cleanup.py`'s `remove_urls_users_punctuations()` method
 - After every 250 tweets, they are then written to a file. By default tweets are saved in [data/trial.txt](data/trial.txt). This can be controleld in `src/config.py`'s `DATA_FILE` dictionary.
 - By default, 5000 tweets for a topic will be mined (if there are that many tweets).
 

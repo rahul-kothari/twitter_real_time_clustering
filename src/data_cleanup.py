@@ -1,10 +1,43 @@
 import re
+import nltk
+from nltk.stem import WordNetLemmatizer
+from nltk.corpus import wordnet
 from sklearn.feature_extraction.text import TfidfVectorizer
 from config import STOPWORDS
 
+tag_dict = {"J": wordnet.ADJ,
+        "N": wordnet.NOUN,
+        "V": wordnet.VERB,
+        "R": wordnet.ADV}
+
+def lemmatize(sentence):
+    """
+    Convert word to its root word form.
+    Args:
+    sentence: String: a raw tweet
+    Retruns:
+    lemmatized_sentence
+    """
+    lemmatized_sentence = []
+    # 1. Get individual words:
+    word_list = nltk.word_tokenize(sentence)
+    #2. Create lemmatizer:
+    lemmatizer = WordNetLemmatizer()
+
+    for word in word_list:    
+        #3. part of speech of the word:
+        tag = nltk.pos_tag([word])[0][1][0].upper()
+        tag = tag_dict.get(tag, wordnet.NOUN)
+        #4. lemmatize the word
+        lemmatized_word = lemmatizer.lemmatize(word, tag)
+
+        lemmatized_sentence.append(lemmatized_word)
+
+    return " ".join(lemmatized_sentence)
+
 
 def remove_urls_users_punctuations(full_text):
-    """ Create the game, SpaceInvaders. Train or test it.
+    """ 
     Args: 
     full_text : string - a raw tweet
 

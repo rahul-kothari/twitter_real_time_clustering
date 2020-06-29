@@ -1,7 +1,7 @@
 from tweepy import API, Cursor, AppAuthHandler
 
 from config import *
-from data_cleanup import remove_urls_users_punctuations
+from data_cleanup import remove_urls_users_punctuations, lemmatize
 
 
 def create_twitter_object():
@@ -30,7 +30,8 @@ def get_tweets(search_criteria, filename, lang="en"):
 		try: 			
 			count += 1
 			print(count, tweet.full_text)
-			processed_tweet = remove_urls_users_punctuations(tweet.full_text)
+			lemmatized_tweet = lemmatize(tweet.full_text)
+			processed_tweet = remove_urls_users_punctuations(lemmatized_tweet)
 			tweets.append(processed_tweet)
 			if(count%250==0):
 				# write to file every 250 tweets. 
